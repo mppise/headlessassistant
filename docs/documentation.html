@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HeadlessAssistant — Integration Demo</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      margin: 0;
+      padding: 40px;
+      background: #f9fafb;
+      color: #111827;
+    }
+    h1 { font-size: 1.5rem; margin-bottom: 8px; }
+    p { color: #6b7280; margin-bottom: 32px; }
+
+    .demo-section {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 32px;
+    }
+    .demo-section h2 { font-size: 1.1rem; margin: 0 0 8px; }
+    .demo-section p { margin: 0 0 16px; }
+
+    .code-block {
+      background: #1f2937;
+      color: #e5e7eb;
+      border-radius: 8px;
+      padding: 16px;
+      font-family: monospace;
+      font-size: 13px;
+      overflow-x: auto;
+      margin-top: 16px;
+    }
+
+    .badge {
+      display: inline-block;
+      background: #EEF2FF;
+      color: #4F46E5;
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .badge.green { background: #ECFDF5; color: #065F46; }
+
+    .warning {
+      background: #FFFBEB;
+      border: 1px solid #FCD34D;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #92400E;
+      margin-bottom: 24px;
+    }
+    .warning strong { color: #78350F; }
+
+    .tip {
+      background: #EEF2FF;
+      border: 1px solid #C7D2FE;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #3730A3;
+      margin-top: 16px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>HeadlessAssistant — Demo</h1>
+<p>Live demo of the HeadlessAssistant embeddable chat widget. The floating bubble in the bottom-right corner is active on this page — click it to start a conversation.</p>
+
+<div class="warning">
+  <strong>Security notice:</strong> The <code>bearer_token</code> in your config is visible to anyone who can inspect the page source.
+  Always use a short-lived, scoped token generated server-side — never a long-lived API master key.
+</div>
+
+<!-- ── Section 1: Floating bubble (live) ───────────────────────────────── -->
+<div class="demo-section">
+  <span class="badge green">Live · Floating bubble</span>
+  <h2>Floating bubble mode</h2>
+  <p>
+    The widget is active on this page. Click the <strong>chat bubble</strong> in the bottom-right corner to open it.
+    Responses are served by a local mock that streams markdown content with simulated 40ms chunk delays.
+  </p>
+  <div class="tip">
+    💡 Try sending a few messages to see SSE streaming, markdown rendering, and conversation history in action.
+    Refresh the page — your history is preserved in <code>localStorage</code>.
+  </div>
+  <div class="code-block">// Auto-init via data-config attribute (drop-in script tag)
+&lt;script
+  src="/src/headless-assistant.js"
+  data-config="/config/headless-assistant.config.json"&gt;
+&lt;/script&gt;
+
+// — or — Manual init
+HeadlessAssistant.init({
+  ai_endpoint: 'https://your-api.example.com/chat',
+  bearer_token: 'your-short-lived-scoped-token',
+  stream_mode: 'sse',
+  theme: { header_title: 'My Assistant' }
+});</div>
+</div>
+
+<!-- ── Section 2: Inline embed (code reference) ────────────────────────── -->
+<div class="demo-section">
+  <span class="badge">Code reference · Inline embed</span>
+  <h2>Inline embed mode</h2>
+  <p>
+    Mount the widget inside a specific container element by passing a <code>container</code> CSS selector.
+    The widget fills the container and is visible immediately — no bubble.
+    Note: only one widget instance can be active per page at a time.
+  </p>
+  <div class="code-block">&lt;div id="my-assistant" style="width:420px;height:520px;"&gt;&lt;/div&gt;
+
+&lt;script src="/src/headless-assistant.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+  HeadlessAssistant.init({
+    ai_endpoint: 'https://your-api.example.com/chat',
+    bearer_token: 'your-short-lived-scoped-token',
+    container: '#my-assistant',
+    max_turns: 10,
+    stream_mode: 'sse',
+    theme: {
+      primary_color: '#4F46E5',
+      header_title: 'My Assistant',
+      placeholder_text: 'Ask me anything…'
+    }
+  });
+&lt;/script&gt;</div>
+</div>
+
+<!-- ── Section 3: Config reference ─────────────────────────────────────── -->
+<div class="demo-section">
+  <span class="badge">Config reference</span>
+  <h2>All config options</h2>
+  <p>Full config file with every supported option and its default value.</p>
+  <div class="code-block">{
+  "ai_endpoint":   "https://your-api.example.com/chat",   // required
+  "bearer_token":   "your-short-lived-scoped-token",        // required
+  "stream_mode":    "sse",          // "sse" | "json"
+  "max_turns":      10,             // 1–100
+  "response_field": "message",      // dot-notation path in API response
+  "stream_field":   "message",      // dot-notation path in each SSE chunk
+  "container":      null,           // CSS selector for inline embed
+  "user":           null,           // static user ID; auto UUID if omitted
+  "theme": {
+    "primary_color":    "#4F46E5",
+    "background_color": "#FFFFFF",
+    "font_family":      "system-ui, sans-serif",
+    "font_size":        "14px",
+    "header_title":     "Assistant",
+    "placeholder_text": "Type a message…",
+    "avatar_url":       null,
+    "border_radius":    "12px"
+  }
+}</div>
+</div>
+
+<!--
+  LIVE SCRIPTS
+-->
+<script src="/src/headless-assistant.js"></script>
+<script>
+  // ── Mock SSE API ──────────────────────────────────────────────────────────
+  // Intercepts fetch calls to any URL containing "mock-demo-api" so the demo
+  // works without a real backend. Remove this block in production.
+  (function () {
+    const MOCK_RESPONSES = [
+      "## Hello!\n\nI'm **HeadlessAssistant**, a zero-dependency embeddable chat widget.\n\nHere's what I can demonstrate:\n\n- Markdown rendering\n- SSE streaming\n- Conversation history\n- Theming",
+      "Sure! Here's a quick **feature summary**:\n\n| Feature | Status |\n|---------|--------|\n| SSE Streaming | ✅ |\n| Full JSON | ✅ |\n| localStorage history | ✅ |\n| Custom themes | ✅ |\n\nAll features are working in this demo.",
+      "I can render *italic*, **bold**, and [links](https://example.com) in my responses.\n\nLists work too:\n1. First item\n2. Second item\n3. Third item\n\nGive it a try — ask me anything!",
+    ];
+    let _responseIndex = 0;
+
+    function mockSSEResponse() {
+      const responseText = MOCK_RESPONSES[_responseIndex % MOCK_RESPONSES.length];
+      _responseIndex++;
+
+      const chunkSize = 20;
+      const chunks = [];
+      for (let i = 0; i < responseText.length; i += chunkSize) {
+        chunks.push(responseText.slice(i, i + chunkSize));
+      }
+
+      const encoder = new TextEncoder();
+      let i = 0;
+      const stream = new ReadableStream({
+        async pull(controller) {
+          if (i < chunks.length) {
+            const payload = JSON.stringify({ message: chunks[i] });
+            controller.enqueue(encoder.encode('data: ' + payload + '\n\n'));
+            i++;
+            await new Promise(r => setTimeout(r, 40));
+          } else {
+            controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+            controller.close();
+          }
+        }
+      });
+
+      return Promise.resolve(new Response(stream, {
+        status: 200,
+        headers: { 'Content-Type': 'text/event-stream' },
+      }));
+    }
+
+    const _origFetch = window.fetch;
+    window.fetch = function (url, opts) {
+      if (typeof url === 'string' && url.includes('mock-demo-api')) {
+        return mockSSEResponse();
+      }
+      return _origFetch.apply(this, arguments);
+    };
+  })();
+
+  // ── Floating bubble (live demo) ───────────────────────────────────────────
+  HeadlessAssistant.init({
+    ai_endpoint: 'https://mock-demo-api/chat',
+    bearer_token: 'demo-token',
+    max_turns: 10,
+    stream_mode: 'sse',
+    response_field: 'message',
+    theme: {
+      primary_color: '#4F46E5',
+      header_title: 'HeadlessAssistant',
+      placeholder_text: 'Type a message to try it…',
+    }
+  });
+</script>
+
+</body>
+</html>

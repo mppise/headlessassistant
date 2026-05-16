@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cardinal Rx — Payment Portal</title>
+  <link rel="stylesheet" href="portal.css">
+</head>
+
+<body>
+
+  <!-- Utility bar -->
+  <div class="util-bar">
+    <div class="util-bar-left">
+      <a href="#">Help Center</a>
+      <a href="#">Contact Billing</a>
+      <a href="#">1-800-926-3161</a>
+    </div>
+    <div class="util-secure">
+      <div class="secure-dot"></div>
+      Secure Session
+    </div>
+  </div>
+
+  <!-- Nav -->
+  <nav>
+    <div class="nav-logo">
+      <div class="nav-logo-mark">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M10 2v16M2 10h16" stroke="#fff" stroke-width="2.5" stroke-linecap="square" />
+        </svg>
+      </div>
+      <div class="nav-logo-text">Cardinal<span>Rx</span></div>
+      <div class="nav-portal-label">Payment Portal</div>
+    </div>
+    <div class="nav-user">
+      <div>
+        <div class="nav-user-name" id="nav-user-name">Sarah M. Johnson</div>
+        <div class="nav-user-sub" id="nav-account-id">Account #CRX-00841-23</div>
+      </div>
+      <div class="nav-avatar">SJ</div>
+      <button class="btn btn-ghost" style="margin-left:8px">Sign Out</button>
+    </div>
+  </nav>
+
+  <!-- Page -->
+  <div class="page-wrap">
+
+    <!-- Alert -->
+    <div class="alert-banner">
+      <span class="alert-icon">⚠️</span>
+      <div>
+        <strong>Payment overdue.</strong>
+        <span>Invoice #INV-2024-0091 was due on Apr 15, 2025. A late fee may apply after May 30.</span>
+      </div>
+      <button class="alert-close">✕</button>
+    </div>
+
+    <!-- Page header -->
+    <div class="page-header">
+      <div>
+        <div class="page-title">Billing &amp; Payments</div>
+        <div class="page-sub">Review your balance, pay invoices, and manage payment methods.</div>
+      </div>
+      <button class="btn btn-ghost">⬇ Download Statement</button>
+    </div>
+
+    <!-- Summary cards -->
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="summary-label">Outstanding Balance</div>
+        <div class="summary-value red">$1,284.50</div>
+        <div class="summary-change"><span class="down">▲ $312.00</span> since last month</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Next Due Date</div>
+        <div class="summary-value">May 31</div>
+        <div class="summary-change">16 days remaining</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Total Paid (YTD)</div>
+        <div class="summary-value green">$4,160.00</div>
+        <div class="summary-change"><span class="up">▲ 8%</span> vs last year</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Insurance Applied</div>
+        <div class="summary-value">$892.30</div>
+        <div class="summary-change">BlueCross BlueShield</div>
+      </div>
+    </div>
+
+    <!-- Main grid -->
+    <div class="portal-grid">
+
+      <!-- Left column -->
+      <div>
+
+        <!-- Outstanding invoices -->
+        <div class="panel">
+          <div class="balance-hero">
+            <div class="balance-left">
+              <div class="balance-eyebrow">Total Outstanding Balance</div>
+              <div class="balance-amount">$1,284.50</div>
+              <div class="balance-due-note">
+                Includes <span class="overdue">1 overdue invoice</span> · 3 invoices total
+              </div>
+            </div>
+            <div class="balance-right">
+              <button class="btn btn-primary">Pay Selected</button>
+              <button class="btn btn-green">Pay All Now</button>
+            </div>
+          </div>
+
+          <!-- Select bar -->
+          <div class="select-bar">
+            <div class="select-bar-text">
+              <strong>2 invoices selected</strong> — select invoices below to include in payment
+            </div>
+            <div class="select-bar-right">
+              <div class="select-total-amount">$912.50</div>
+            </div>
+          </div>
+
+          <!-- Invoice table -->
+          <div class="panel-body no-pad">
+            <table class="inv-table">
+              <thead>
+                <tr>
+                  <th style="width:36px"></th>
+                  <th>Invoice</th>
+                  <th>Service</th>
+                  <th>Date</th>
+                  <th>Due</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><input type="checkbox" class="inv-checkbox" checked></td>
+                  <td>
+                    <div class="inv-num">INV-2024-0091</div>
+                  </td>
+                  <td>
+                    <div>Specialty Rx Dispensing</div>
+                    <div class="inv-desc">Humira 40mg × 2 pens</div>
+                  </td>
+                  <td>Mar 28, 2025</td>
+                  <td style="color:var(--red);font-weight:700">Apr 15, 2025</td>
+                  <td class="inv-amount">$584.00</td>
+                  <td><span class="chip chip-overdue">Overdue</span></td>
+                  <td class="stmt-dl" title="Download PDF">⬇</td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" class="inv-checkbox" checked></td>
+                  <td>
+                    <div class="inv-num">INV-2025-0112</div>
+                  </td>
+                  <td>
+                    <div>Monthly Rx Refill</div>
+                    <div class="inv-desc">Metformin 500mg, Lisinopril 10mg</div>
+                  </td>
+                  <td>Apr 30, 2025</td>
+                  <td>May 31, 2025</td>
+                  <td class="inv-amount">$328.50</td>
+                  <td><span class="chip chip-pending">Due</span></td>
+                  <td class="stmt-dl" title="Download PDF">⬇</td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" class="inv-checkbox"></td>
+                  <td>
+                    <div class="inv-num">INV-2025-0128</div>
+                  </td>
+                  <td>
+                    <div>Annual Wellness Supplies</div>
+                    <div class="inv-desc">Glucose meter, test strips</div>
+                  </td>
+                  <td>May 2, 2025</td>
+                  <td>Jun 1, 2025</td>
+                  <td class="inv-amount">$372.00</td>
+                  <td><span class="chip chip-partial">Partial</span></td>
+                  <td class="stmt-dl" title="Download PDF">⬇</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Payment history -->
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-head-title">
+              <span class="icon">🕐</span> Payment History
+            </div>
+            <a href="#" class="panel-head-action">View All</a>
+          </div>
+          <div class="panel-body no-pad">
+            <div class="statement-row">
+              <div class="stmt-date">May 1, 2025</div>
+              <div class="stmt-desc">
+                <div class="stmt-desc-main">Payment Received</div>
+                <div class="stmt-desc-sub">INV-2025-0098 · Visa ···4291</div>
+              </div>
+              <div class="stmt-amount credit">−$412.00</div>
+              <span class="chip chip-paid">Paid</span>
+              <span class="stmt-dl" title="Receipt">⬇</span>
+            </div>
+            <div class="statement-row">
+              <div class="stmt-date">Apr 2, 2025</div>
+              <div class="stmt-desc">
+                <div class="stmt-desc-main">Payment Received</div>
+                <div class="stmt-desc-sub">INV-2025-0081 · AutoPay</div>
+              </div>
+              <div class="stmt-amount credit">−$290.50</div>
+              <span class="chip chip-paid">Paid</span>
+              <span class="stmt-dl" title="Receipt">⬇</span>
+            </div>
+            <div class="statement-row">
+              <div class="stmt-date">Apr 1, 2025</div>
+              <div class="stmt-desc">
+                <div class="stmt-desc-main">Insurance Adjustment</div>
+                <div class="stmt-desc-sub">BlueCross BlueShield claim #BC-9812</div>
+              </div>
+              <div class="stmt-amount credit">−$214.80</div>
+              <span class="chip chip-paid">Applied</span>
+              <span class="stmt-dl" title="EOB">⬇</span>
+            </div>
+            <div class="statement-row">
+              <div class="stmt-date">Mar 5, 2025</div>
+              <div class="stmt-desc">
+                <div class="stmt-desc-main">Payment Received</div>
+                <div class="stmt-desc-sub">INV-2025-0060 · Mastercard ···8872</div>
+              </div>
+              <div class="stmt-amount credit">−$380.00</div>
+              <span class="chip chip-paid">Paid</span>
+              <span class="stmt-dl" title="Receipt">⬇</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right column -->
+      <div>
+
+        <!-- Payment summary -->
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-head-title">
+              <span class="icon">💳</span> Payment Summary
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="pay-summary-row">
+              <span class="label">INV-2024-0091</span>
+              <span class="value">$584.00</span>
+            </div>
+            <div class="pay-summary-row">
+              <span class="label">INV-2025-0112</span>
+              <span class="value">$328.50</span>
+            </div>
+            <div class="pay-summary-row">
+              <span class="label">Late fee (INV-0091)</span>
+              <span class="value">$15.00</span>
+            </div>
+            <div class="pay-summary-row">
+              <span class="label" style="color:var(--green)">Insurance credit</span>
+              <span class="value" style="color:var(--green)">−$15.00</span>
+            </div>
+            <div class="pay-summary-row total">
+              <span class="label">Total Due Today</span>
+              <span class="value">$912.50</span>
+            </div>
+            <div class="pay-btn-wrap">
+              <button class="btn btn-green">Confirm &amp; Pay $912.50</button>
+            </div>
+            <div class="security-note">🔒 256-bit SSL · PCI DSS Compliant</div>
+          </div>
+        </div>
+
+        <!-- Payment methods -->
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-head-title">
+              <span class="icon">🏦</span> Payment Methods
+            </div>
+            <a href="#" class="panel-head-action">Manage</a>
+          </div>
+          <div class="method-list">
+            <div class="method-row selected">
+              <input type="radio" name="method" class="method-radio" checked>
+              <div class="method-icon">VISA</div>
+              <div>
+                <div class="method-name">Visa ···· 4291</div>
+                <div class="method-sub">Expires 09/27</div>
+              </div>
+              <div class="method-default">Default</div>
+            </div>
+            <div class="method-row">
+              <input type="radio" name="method" class="method-radio">
+              <div class="method-icon">MC</div>
+              <div>
+                <div class="method-name">Mastercard ···· 8872</div>
+                <div class="method-sub">Expires 03/26</div>
+              </div>
+            </div>
+            <div class="method-row">
+              <input type="radio" name="method" class="method-radio">
+              <div class="method-icon" style="font-size:0.55rem">ACH</div>
+              <div>
+                <div class="method-name">Checking ···· 3310</div>
+                <div class="method-sub">Chase Bank · AutoPay enabled</div>
+              </div>
+            </div>
+          </div>
+          <div class="add-method">+ Add Payment Method</div>
+        </div>
+
+        <!-- Insurance on file -->
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-head-title">
+              <span class="icon">🛡</span> Insurance on File
+            </div>
+            <a href="#" class="panel-head-action">Update</a>
+          </div>
+          <div class="panel-body no-pad">
+            <div class="insurance-row">
+              <div class="ins-logo">BCBS</div>
+              <div>
+                <div class="ins-name">BlueCross BlueShield</div>
+                <div class="ins-meta">Member ID: XJM00124441 · Group: 80044</div>
+              </div>
+              <div class="ins-status"><span class="chip chip-paid">Active</span></div>
+            </div>
+            <div class="insurance-row">
+              <div class="ins-logo">MEDI</div>
+              <div>
+                <div class="ins-name">Medicare Part D</div>
+                <div class="ins-meta">Plan: SilverScript Choice · BIN: 004336</div>
+              </div>
+              <div class="ins-status"><span class="chip chip-paid">Active</span></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</body>
+
+<!-- HeadlessAssistant widget -->
+<script src="http://localhost:3000/headless-assistant.js"></script>
+<script src="portal.js"></script>
+
+</html>

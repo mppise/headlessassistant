@@ -1,0 +1,21 @@
+{
+  "ai_endpoint": "http://localhost:3000/ask-assistant",
+  "bearer_token": "string: OAuth2 bearer token sent in Authorization header",
+  "customer_id": "string: authenticated customer ID — omit to use anonymous UUID",
+  "user_name": "string: display name shown in greeting bubble — omit to skip greeting",
+  "container": "string: CSS selector for inline embed target — omit for floating bubble",
+  "max_turns": 10,
+  "stream_mode": "sse",
+  "response_field": "message",
+  "stream_field": "message",
+  "theme": {
+    "primary_color": "#4F46E5",
+    "background_color": "#FFFFFF",
+    "font_family": "system-ui, sans-serif",
+    "font_size": "14px",
+    "header_title": "Assistant",
+    "placeholder_text": "Type a message…",
+    "avatar_url": "string: URL to assistant avatar image — omit for default initial",
+    "border_radius": "12px"
+  }
+}

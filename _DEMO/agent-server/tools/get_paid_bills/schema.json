@@ -1,0 +1,18 @@
+{
+  "type": "function",
+  "function": {
+    "name": "get_paid_bills",
+    "description": "Retrieve the patient's payment history.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "status":   { "type": "string", "enum": ["9", "2"], "description": "\"9\" = cleared/paid (default). \"2\" = payment received but not yet cleared." },
+        "fromDate": { "type": "string", "description": "ISO date (YYYY-MM-DD) — start of date range." },
+        "toDate":   { "type": "string", "description": "ISO date (YYYY-MM-DD) — end of date range." },
+        "$top":     { "type": "integer", "description": "Max records to return." },
+        "$skip":    { "type": "integer", "description": "Records to skip (pagination)." }
+      },
+      "required": []
+    }
+  }
+}

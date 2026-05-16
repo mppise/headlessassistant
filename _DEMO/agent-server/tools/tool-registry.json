@@ -1,0 +1,32 @@
+[
+  {
+    "name": "get_customer_summary",
+    "statusMessage": "Pulling together your account summary…",
+    "schema": "./tools/get_customer_summary/schema.json",
+    "handler": "./tools/get_customer_summary/handler.js"
+  },
+  {
+    "name": "get_open_items",
+    "statusMessage": "Retrieving your open invoices…",
+    "schema": "./tools/get_open_items/schema.json",
+    "handler": "./tools/get_open_items/handler.js"
+  },
+  {
+    "name": "get_customer_details",
+    "statusMessage": "Fetching your account details…",
+    "schema": "./tools/get_customer_details/schema.json",
+    "handler": "./tools/get_customer_details/handler.js"
+  },
+  {
+    "name": "get_paid_bills",
+    "statusMessage": "Looking up your payment history…",
+    "schema": "./tools/get_paid_bills/schema.json",
+    "handler": "./tools/get_paid_bills/handler.js"
+  },
+  {
+    "name": "get_payer_info",
+    "statusMessage": "Checking payer information…",
+    "schema": "./tools/get_payer_info/schema.json",
+    "handler": "./tools/get_payer_info/handler.js"
+  }
+]

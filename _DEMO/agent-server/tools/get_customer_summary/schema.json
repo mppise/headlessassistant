@@ -1,0 +1,12 @@
+{
+  "type": "function",
+  "function": {
+    "name": "get_customer_summary",
+    "description": "Returns a combined summary of the patient's account: open invoices, credit memos, total balance, overdue count, and contact details. Best first call for general balance inquiries.",
+    "parameters": {
+      "type": "object",
+      "properties": {},
+      "required": []
+    }
+  }
+}

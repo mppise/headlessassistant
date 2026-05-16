@@ -1,0 +1,25 @@
+{
+  "type": "function",
+  "function": {
+    "name": "get_payer_info",
+    "description": "Retrieve payer (insurance or third-party biller) information for one or more ship-to customer numbers. If no customers are specified, returns payers for the current account.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "customers": {
+          "type": "array",
+          "description": "List of ship-to customer numbers to look up payers for. Omit to use the current account.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "Origin":   { "type": "string", "description": "Origin system, e.g. \"vantus\"." },
+              "Customer": { "type": "string", "description": "Ship-to customer number." }
+            },
+            "required": ["Customer"]
+          }
+        }
+      },
+      "required": []
+    }
+  }
+}

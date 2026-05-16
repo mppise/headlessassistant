@@ -8,8 +8,8 @@ license: Apache-2.0 (see LICENSE in project root)
 # Project Status
 
 > **Overall health:** 🟢 On Track
-> **Last updated:** 2026-05-15
-> **Active phase:** Deployment Readiness
+> **Last updated:** 2026-05-16
+> **Active phase:** Development — CHG-001 (C02-AgentServerTools) complete
 
 ---
 
@@ -19,9 +19,9 @@ license: Apache-2.0 (see LICENSE in project root)
 | :-------- | :--------: | :------------: | :--------------: | :-------- | :-------- |
 | Ideation | ✅ | 2026-05-15 | 2026-05-15 | SpecGantry | Complete — A_Project.md agreed, all assumptions approved |
 | Planning | ✅ | 2026-05-15 | 2026-05-15 | SpecGantry | Complete — B_Architecture.md agreed, all decisions and risks actioned |
-| Detailed Design | ✅ | 2026-05-15 | 2026-05-15 | SpecGantry | Complete — C01-HeadlessAssistant spec agreed |
+| Detailed Design | ✅ | 2026-05-15 | 2026-05-16 | SpecGantry | CHG-001 complete — C02-AgentServerTools spec agreed |
 | Development | ✅ | 2026-05-15 | 2026-05-15 | SpecGantry | Complete — C01-HeadlessAssistant built, linted, documented |
-| Deployment Readiness | ⬜ | | | | |
+| Deployment Readiness | ✅ | 2026-05-15 | 2026-05-15 | SpecGantry | Complete — Audit PASS, go.sh created, v2026.05.15.2146 marked ready |
 
 > **Status key:** ⬜ Not started · 🔄 In progress · ✅ Complete · 🔴 Blocked
 
@@ -32,6 +32,7 @@ license: Apache-2.0 (see LICENSE in project root)
 | **Component** | **Status** | **Design started** | **Design ready** | **Dev started** | **Dev complete** | **Blocked by** | **Notes** |
 | :------------ | :--------: | :----------------: | :--------------: | :-------------: | :--------------: | :------------- | :-------- |
 | C01-HeadlessAssistant | ✅ | 2026-05-15 | 2026-05-15 | 2026-05-15 | 2026-05-15 | | All 23 features complete |
+| C02-AgentServerTools | ✅ | 2026-05-16 | 2026-05-16 | 2026-05-16 | 2026-05-16 | | CHG-001: plugin tool registry — 6 features complete |
 
 ---
 
@@ -60,7 +61,7 @@ license: Apache-2.0 (see LICENSE in project root)
 
 | **Version** | **Status** | **Deployment ready on** | **Deployed on** | **Notes** |
 | :---------- | :--------: | :---------------------: | :-------------: | :-------- |
-| | <!-- 🔄 / ✅ / 🔴 --> | | | |
+| v2026.05.15.2146 | [X] Active | 2026-05-15 | — | Initial release — C01-HeadlessAssistant (23 features). Audit PASS, 0 SEV-1/SEV-2. 2 SEV-3 (status events not surfaced in UI; no automated tests). Ready to deploy. |
 
 ---
 

@@ -1,0 +1,12 @@
+{
+  "type": "function",
+  "function": {
+    "name": "get_customer_details",
+    "description": "Retrieve full business partner details: address, email, phone, payment cards on file, bank accounts, and company billing information.",
+    "parameters": {
+      "type": "object",
+      "properties": {},
+      "required": []
+    }
+  }
+}

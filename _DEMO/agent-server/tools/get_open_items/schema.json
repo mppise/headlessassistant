@@ -1,0 +1,22 @@
+{
+  "type": "function",
+  "function": {
+    "name": "get_open_items",
+    "description": "Retrieve open invoices and/or credit memos for the current patient.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "Scenario": {
+          "type": "string",
+          "enum": ["D", "I", "C"],
+          "description": "\"D\" = invoices + credit memos (default). \"I\" = invoices only. \"C\" = credit memos only."
+        },
+        "minDate": { "type": "string", "description": "ISO date (YYYY-MM-DD) — earliest document date filter." },
+        "maxDate": { "type": "string", "description": "ISO date (YYYY-MM-DD) — latest document date filter." },
+        "$top":    { "type": "integer", "description": "Max records to return." },
+        "$skip":   { "type": "integer", "description": "Records to skip (pagination)." }
+      },
+      "required": []
+    }
+  }
+}

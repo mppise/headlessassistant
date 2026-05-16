@@ -7,7 +7,8 @@
 
 import express from 'express';
 import { getAccessToken, callAiCore } from '../lib/ai-core.js';
-import { TOOLS, buildMessages, handleToolCalls } from '../lib/agent.js';
+import { TOOLS } from '../lib/tool-loader.js'; // [CHG-001]
+import { buildMessages, handleToolCalls } from '../lib/agent.js';
 
 export const assistantRouter = express.Router();
 

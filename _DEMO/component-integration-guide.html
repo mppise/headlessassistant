@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HeadlessAssistant — Integration Guide</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5/dist/css/bootstrap.min.css">
+  <style>
+    body { padding-top: 2rem; padding-bottom: 4rem; }
+    .code-block { background: #1e293b; color: #e2e8f0; border-radius: 8px; padding: 1rem 1.25rem; font-size: 0.875rem; overflow-x: auto; }
+    .code-block code { color: inherit; background: none; padding: 0; }
+    .badge-feature { font-size: 0.7rem; font-weight: 600; vertical-align: middle; }
+    .warning-box { border-left: 4px solid #f59e0b; background: #fffbeb; padding: 0.75rem 1rem; border-radius: 0 6px 6px 0; }
+    .tip-box { border-left: 4px solid #4f46e5; background: #eef2ff; padding: 0.75rem 1rem; border-radius: 0 6px 6px 0; }
+    h2 { margin-top: 2.5rem; }
+    h3 { margin-top: 1.75rem; font-size: 1.1rem; color: #374151; }
+    .toc a { text-decoration: none; color: #4f46e5; }
+    .toc a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+
+<!-- Review status (hidden) -->
+<div style="display:none">
+  <table>
+    <thead><tr><th>Status</th><th>Date</th></tr></thead>
+    <tbody><tr><td>Approved</td><td>May 15, 2026</td></tr></tbody>
+  </table>
+</div>
+
+<div class="container" style="max-width: 860px;">
+
+  <!-- Header -->
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="index.html">Docs</a></li>
+      <li class="breadcrumb-item active">Integration Guide</li>
+    </ol>
+  </nav>
+
+  <h1 class="display-6 fw-bold mb-1">Integration Guide</h1>
+  <p class="lead text-muted mb-4">Embed HeadlessAssistant in any web portal using a script tag or a programmatic init call.</p>
+
+  <!-- TOC -->
+  <div class="card mb-5 border-0 bg-light">
+    <div class="card-body">
+      <h6 class="fw-bold mb-2">On this page</h6>
+      <ol class="toc mb-0 ps-3">
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#manual-init">Manual init (recommended)</a></li>
+        <li><a href="#auto-init">Auto-init (script tag)</a></li>
+        <li><a href="#floating-bubble">Floating bubble mode</a></li>
+        <li><a href="#inline-embed">Inline embed mode</a></li>
+        <li><a href="#config-reference">Config reference</a></li>
+        <li><a href="#user-identity">User identity</a></li>
+        <li><a href="#clear-history">Clear history</a></li>
+        <li><a href="#close-minimize">Close / minimize</a></li>
+        <li><a href="#destroy">Destroy (SPA teardown)</a></li>
+        <li><a href="#config-errors">Config errors</a></li>
+        <li><a href="#security">Security notes</a></li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- Prerequisites -->
+  <h2 id="prerequisites">Prerequisites</h2>
+  <p>Before embedding HeadlessAssistant you need:</p>
+  <ul>
+    <li>The <code>headless-assistant.js</code> bundle hosted somewhere your page can reach (your CDN, same server, etc.).</li>
+    <li>An API endpoint that accepts <code>POST { customer_id, message, history }</code> JSON and returns either a full JSON response or an SSE stream. See the <a href="component-error-handling.html">API contract</a> for details.</li>
+    <li>A short-lived Bearer token for that endpoint.</li>
+  </ul>
+  <p>No build tool, no package manager, and no framework are required on the host page.</p>
+
+  <!-- Manual init -->
+  <h2 id="manual-init">Manual init (recommended) <span class="badge badge-feature ms-1" style="background:#4f46e5;color:#fff">C01-F02</span></h2>
+  <p>Use <code>HeadlessAssistant.init(config)</code> to mount the widget with a plain JavaScript object. This is the preferred approach because it lets you inject runtime values — such as the authenticated user's ID and display name — directly from the page context without a separate config file fetch.</p>
+
+  <h3>Step 1 — Load the script</h3>
+  <div class="code-block mb-3">
+    <code>&lt;script src="/path/to/headless-assistant.js"&gt;&lt;/script&gt;</code>
+  </div>
+
+  <h3>Step 2 — Call <code>HeadlessAssistant.init()</code></h3>
+  <div class="code-block mb-3">
+    <code>HeadlessAssistant.init({
+  ai_endpoint:  'https://your-api.example.com/chat',
+  bearer_token: 'your-short-lived-scoped-token',
+  customer_id:  'CUST-00123',   // authenticated user's account ID
+  user_name:    'Sarah Johnson', // shown in greeting bubble
+  max_turns:    10,
+  stream_mode:  'sse',
+  theme: {
+    header_title:    'Billing Assistant',
+    placeholder_text: 'Ask about invoices, payments, or coverage…',
+    primary_color:   '#CC0000'
+  }
+});</code>
+  </div>
+
+  <div class="tip-box mb-3">
+    If <code>user_name</code> is supplied and there is no prior conversation history, the widget greets the user by first name when the panel first opens (e.g., <em>"Hi Sarah! How can I help you today?"</em>). The greeting is not saved to history.
+  </div>
+
+  <div class="tip-box mb-4">
+    Calling <code>init()</code> while the widget is already mounted is a no-op (a warning is logged to the browser console). Call <code>HeadlessAssistant.destroy()</code> first if you need to re-mount with different config.
+  </div>
+
+  <!-- Auto-init -->
+  <h2 id="auto-init">Auto-init (script tag) <span class="badge bg-indigo text-white badge-feature ms-1" style="background:#4f46e5">C01-F01</span></h2>
+  <p>The simplest integration for static pages where runtime values are not needed. Add a <code>&lt;script&gt;</code> tag with a <code>data-config</code> attribute pointing to your JSON config file. The widget mounts automatically when the page loads.</p>
+
+  <h3>Step 1 — Create your config file</h3>
+  <p>Save this as <code>headless-assistant.config.json</code> on your server:</p>
+  <div class="code-block mb-3">
+    <code>{
+  "ai_endpoint":  "https://your-api.example.com/chat",
+  "bearer_token": "your-short-lived-scoped-token",
+  "max_turns":    10,
+  "stream_mode":  "sse",
+  "theme": {
+    "header_title":    "My Assistant",
+    "placeholder_text": "Ask me anything…",
+    "primary_color":   "#4F46E5"
+  }
+}</code>
+  </div>
+
+  <h3>Step 2 — Add the script tag</h3>
+  <div class="code-block mb-3">
+    <code>&lt;script
+  src="/path/to/headless-assistant.js"
+  data-config="/path/to/headless-assistant.config.json"&gt;
+&lt;/script&gt;</code>
+  </div>
+
+  <div class="warning-box mb-4">
+    Auto-init fetches the config file at runtime. <code>customer_id</code> and <code>user_name</code> cannot be set dynamically this way — use <a href="#manual-init">manual init</a> when you need to pass authenticated user context.
+  </div>
+
+  <!-- Floating bubble -->
+  <h2 id="floating-bubble">Floating bubble mode <span class="badge badge-feature ms-1" style="background:#4f46e5;color:#fff">C01-F05</span></h2>
+  <p>This is the <strong>default mode</strong>. When no <code>container</code> is specified in the config, HeadlessAssistant renders a fixed-position chat bubble in the bottom-right corner of the page.</p>
+  <ul>
+    <li>Clicking the bubble opens the chat panel.</li>
+    <li>The panel slides in with a smooth CSS transition.</li>
+    <li>Clicking the <strong>✕</strong> button in the panel header collapses it back to the bubble.</li>
+  </ul>
+  <p>No extra HTML is needed on your page — the widget injects all its own DOM.</p>
+
+  <!-- Inline embed -->
+  <h2 id="inline-embed">Inline embed mode <span class="badge badge-feature ms-1" style="background:#4f46e5;color:#fff">C01-F06</span></h2>
+  <p>Mount the widget inside a specific element on your page by providing a <code>container</code> CSS selector. The widget fills the container and is visible immediately — no bubble, no toggle button. Use this when you want the assistant to be a permanent, visible section of the page such as a dedicated support tab or sidebar panel.</p>
+
+  <h3>Add a container element</h3>
+  <div class="code-block mb-3">
+    <code>&lt;div id="my-assistant" style="width: 420px; height: 520px;"&gt;&lt;/div&gt;</code>
+  </div>
+
+  <h3>Pass the selector in your config</h3>
+  <div class="code-block mb-3">
+    <code>HeadlessAssistant.init({
+  ai_endpoint:  'https://your-api.example.com/chat',
+  bearer_token: 'your-short-lived-scoped-token',
+  container:    '#my-assistant',   // ← CSS selector
+  stream_mode:  'sse'
+});</code>
+  </div>
+
+  <div class="warning-box mb-4">
+    The container element must exist in the DOM at the time <code>init()</code> is called. If the selector matches nothing, a config error is displayed and the widget halts.
+  </div>
+
+  <!-- Config reference -->
+  <h2 id="config-reference">Config reference</h2>
+  <p>All fields can be provided either in a JSON config file (auto-init) or as a plain JS object passed to <code>init()</code> (manual init).</p>
+
+  <div class="table-responsive mb-4">
+    <table class="table table-bordered table-sm align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>Field</th>
+          <th>Type</th>
+          <th>Required</th>
+          <th>Default</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><code>ai_endpoint</code></td><td>string</td><td>✅</td><td>—</td><td>Full URL of your chat API endpoint</td></tr>
+        <tr><td><code>bearer_token</code></td><td>string</td><td>✅</td><td>—</td><td>Bearer token sent in the <code>Authorization</code> header on every request</td></tr>
+        <tr><td><code>customer_id</code></td><td>string</td><td></td><td>auto UUID</td><td>Authenticated customer identifier sent as <code>customer_id</code> in the request body. If omitted, an anonymous UUID is generated and persisted in <code>localStorage</code></td></tr>
+        <tr><td><code>user_name</code></td><td>string</td><td></td><td>—</td><td>Display name shown in the greeting bubble on a fresh session. Only the first name is used (e.g., <code>"Sarah M. Johnson"</code> → <em>"Hi Sarah!"</em>). Omit to skip the greeting</td></tr>
+        <tr><td><code>container</code></td><td>string</td><td></td><td>—</td><td>CSS selector for inline embed target. Omit for floating bubble mode. See <a href="#inline-embed">Inline embed mode</a></td></tr>
+        <tr><td><code>max_turns</code></td><td>number</td><td></td><td>10</td><td>Max history turns sent to the API per request (1–100)</td></tr>
+        <tr><td><code>stream_mode</code></td><td>"sse" | "json"</td><td></td><td>"sse"</td><td>Whether to expect SSE streaming or a single full JSON response</td></tr>
+        <tr><td><code>response_field</code></td><td>string</td><td></td><td>"message"</td><td>Dot-notation path to the markdown content in the full JSON API response (e.g. <code>"data.reply"</code>)</td></tr>
+        <tr><td><code>stream_field</code></td><td>string</td><td></td><td>same as <code>response_field</code></td><td>Dot-notation path to the markdown chunk in each SSE event payload</td></tr>
+        <tr><td><code>theme.*</code></td><td>object</td><td></td><td>see below</td><td>Theme options — see the <a href="concept-theming.html">Theming guide</a></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- User identity -->
+  <h2 id="user-identity">User identity</h2>
+  <p>HeadlessAssistant sends a <code>customer_id</code> field with every API request so your backend can identify who is asking.</p>
+  <ul>
+    <li><strong>Authenticated users:</strong> pass <code>customer_id</code> in the <code>init()</code> call. The value is used as-is and is never written to <code>localStorage</code>.</li>
+    <li><strong>Anonymous users:</strong> omit <code>customer_id</code>. The widget generates a <code>crypto.randomUUID()</code> on first load, persists it in <code>localStorage</code> under the key <code>ha_user_id</code>, and reuses it across sessions.</li>
+  </ul>
+  <div class="tip-box mb-4">
+    In a portal where the user is already authenticated, always supply <code>customer_id</code> explicitly. This avoids a mismatch between the anonymous UUID and your backend's account records, and eliminates a redundant <code>localStorage</code> write.
+  </div>
+
+  <!-- Clear history -->
+  <h2 id="clear-history">Clear history <span class="badge badge-feature ms-1" style="background:#4f46e5;color:#fff">C01-F15</span></h2>
+  <p>HeadlessAssistant stores conversation history in the browser's <code>localStorage</code>. Users can clear it in two ways:</p>
+  <ul>
+    <li><strong>Via the widget UI:</strong> click the trash icon in the widget header. This immediately wipes all stored conversation turns and resets the chat panel.</li>
+    <li><strong>Programmatically:</strong> call <code>HeadlessAssistant.clearHistory()</code> from your page's JavaScript at any time.</li>
+  </ul>
+  <div class="code-block mb-3">
+    <code>// Example: clear history when the user logs out
+document.querySelector('#logout-btn').addEventListener('click', () => {
+  HeadlessAssistant.clearHistory();
+  logoutUser();
+});</code>
+  </div>
+  <div class="warning-box mb-4">
+    Clearing history also resets the anonymous UUID stored in <code>localStorage</code> — a new UUID is generated immediately. If you supply <code>customer_id</code> in config, that value is unaffected — only the locally-generated UUID is reset.
+  </div>
+
+  <!-- Close / minimize -->
+  <h2 id="close-minimize">Close / minimize <span class="badge badge-feature ms-1" style="background:#4f46e5;color:#fff">C01-F16</span></h2>
+  <p>Users can close the widget using the <strong>✕</strong> button in the header.</p>
+  <ul>
+    <li><strong>Floating bubble mode:</strong> the panel collapses and the chat bubble reappears.</li>
+    <li><strong>Inline embed mode:</strong> the entire widget is hidden (<code>display: none</code>). To show it again, call <code>HeadlessAssistant.destroy()</code> and re-init, or manage visibility via CSS on the container element.</li>
+  </ul>
+
+  <!-- Destroy -->
+  <h2 id="destroy">Destroy (SPA teardown)</h2>
+  <p>In Single Page Applications (SPAs) where pages change without a full browser reload, call <code>HeadlessAssistant.destroy()</code> when the route that embeds the widget is unmounted. This removes all widget DOM nodes and event listeners cleanly.</p>
+  <div class="code-block mb-3">
+    <code>// React example (cleanup in useEffect)
+useEffect(() => {
+  HeadlessAssistant.init({ ai_endpoint: '...', bearer_token: '...' });
+  return () => {
+    HeadlessAssistant.destroy();
+  };
+}, []);</code>
+  </div>
+  <div class="tip-box mb-4">
+    <code>destroy()</code> does <strong>not</strong> clear <code>localStorage</code>. Conversation history and any anonymous UUID are preserved until the user manually clears them or you call <code>clearHistory()</code>.
+  </div>
+
+  <!-- Config errors -->
+  <h2 id="config-errors">Config errors <span class="badge badge-feature ms-1" style="background:#4f46e5;color:#fff">C01-F22</span></h2>
+  <p>If required fields are missing or invalid, the widget renders a visible error message and halts — it does not throw uncaught JavaScript exceptions.</p>
+  <p>Common causes:</p>
+  <ul>
+    <li><code>ai_endpoint</code> is missing or empty.</li>
+    <li><code>bearer_token</code> is missing or empty.</li>
+    <li>The <code>data-config</code> URL returns a 404 or network error (auto-init only).</li>
+    <li>The <code>container</code> selector does not match any element in the DOM.</li>
+  </ul>
+  <p>Check the browser console for details. The error message is displayed where the widget would have appeared.</p>
+
+  <!-- Security -->
+  <h2 id="security">Security notes</h2>
+  <div class="warning-box mb-3">
+    <strong>Your bearer token is visible in the browser.</strong> Anyone who can view your page source or network traffic can read it. Always use a <strong>short-lived, scoped token</strong> generated server-side — never your API master key.
+  </div>
+  <ul>
+    <li>Rotate tokens regularly and expire them quickly (minutes to hours, not days).</li>
+    <li>Scope the token so it can only call your chat endpoint — not admin or write endpoints.</li>
+    <li>HeadlessAssistant sanitizes all API response content before rendering to prevent XSS injection into your page.</li>
+    <li>Conversation history in <code>localStorage</code> is readable by any JavaScript running on the same domain. Do not send sensitive data through the widget if your portal runs untrusted third-party scripts.</li>
+  </ul>
+
+  <hr class="mt-5">
+  <p class="text-muted small">HeadlessAssistant · Apache-2.0 · Last updated May 15, 2026</p>
+</div>
+
+</body>
+</html>

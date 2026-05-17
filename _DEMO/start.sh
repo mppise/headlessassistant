@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 DEMO_DIR="$(cd "$(dirname "$0")" && pwd)"
+AGENT_LOG="$DEMO_DIR/agent-server.log"
 
 # Remove node_modules and reinstall in a given directory
 install_deps() {
@@ -15,8 +16,8 @@ cleanup() {
   set +e
   echo ""
   echo "Stopping servers..."
-  kill "$AGENT_PID" "$PORTAL_PID" 2>/dev/null
-  wait "$AGENT_PID" "$PORTAL_PID" 2>/dev/null
+  kill "$PORTAL_PID" "$AGENT_PID" 2>/dev/null
+  wait "$PORTAL_PID" "$AGENT_PID" 2>/dev/null
   echo "Cleaning up node_modules..."
   rm -rf "$DEMO_DIR/agent-server/node_modules"
   rm -rf "$DEMO_DIR/payment-portal/node_modules"
@@ -24,20 +25,18 @@ cleanup() {
 }
 trap cleanup INT TERM
 
-install_deps "$DEMO_DIR/agent-server"
 install_deps "$DEMO_DIR/payment-portal"
+install_deps "$DEMO_DIR/agent-server"
 
 echo ""
-echo "Starting agent-server   ->  http://localhost:3000"
-npm start --prefix "$DEMO_DIR/agent-server" &
-AGENT_PID=$!
-
 echo "Starting payment-portal ->  http://localhost:8080"
-npm start --prefix "$DEMO_DIR/payment-portal" &
+npm start --prefix "$DEMO_DIR/payment-portal" > /dev/null 2>&1 &
 PORTAL_PID=$!
 
-# Wait for servers to finish printing their startup messages before showing the prompt
-sleep 2
+echo "Starting agent-server   ->  http://localhost:3000"
+: > "$AGENT_LOG"
+stdbuf -oL -eL node "$DEMO_DIR/agent-server/server.js" >> "$AGENT_LOG" 2>&1 &
+AGENT_PID=$!
 
 echo ""
 echo "┌─────────────────────────────────────────────────────┐"
@@ -50,4 +49,6 @@ echo "│   Press Ctrl-C to stop both servers.               │"
 echo "│                                                     │"
 echo "└─────────────────────────────────────────────────────┘"
 echo ""
-wait
+echo "Agent server logs → $AGENT_LOG"
+echo ""
+tail -f "$AGENT_LOG"

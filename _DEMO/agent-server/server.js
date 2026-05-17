@@ -4,6 +4,7 @@ import path from 'path';
 import express from 'express';
 import { assistantRouter } from './routes/assistant.js';
 import { widgetRouter }    from './routes/widget.js';
+import { warn } from './lib/logger.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenvConfig({ path: path.join(__dirname, '.env') });
@@ -25,7 +26,7 @@ app.use(widgetRouter);
 app.use(assistantRouter);
 
 app.listen(PORT, () => {
-  console.warn(`Agent server  →  http://localhost:${PORT}`);
-  console.warn(`  GET  /headless-assistant.js   widget bundle`);
-  console.warn(`  POST /ask-assistant            collections agent`);
+  warn('[server]', `Agent server  →  http://localhost:${PORT}`);
+  warn('[server]', `  GET  /headless-assistant.js   widget bundle`);
+  warn('[server]', `  POST /ask-assistant            collections agent`);
 });

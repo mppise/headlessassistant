@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HeadlessAssistant — Agent Server Configuration Guide</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5/dist/css/bootstrap.min.css">
+  <style>
+    body { padding-top: 2rem; padding-bottom: 4rem; }
+    .code-block { background: #1e293b; color: #e2e8f0; border-radius: 8px; padding: 1rem 1.25rem; font-size: 0.875rem; overflow-x: auto; }
+    .code-block code { color: inherit; background: none; padding: 0; }
+    .warning-box { border-left: 4px solid #f59e0b; background: #fffbeb; padding: 0.75rem 1rem; border-radius: 0 6px 6px 0; }
+    .tip-box { border-left: 4px solid #4f46e5; background: #eef2ff; padding: 0.75rem 1rem; border-radius: 0 6px 6px 0; }
+    .step-badge { display: inline-block; background: #4f46e5; color: #fff; border-radius: 50%; width: 1.6rem; height: 1.6rem; text-align: center; line-height: 1.6rem; font-size: 0.8rem; font-weight: 700; margin-right: 0.5rem; }
+    h2 { margin-top: 2.5rem; }
+    h3 { margin-top: 1.75rem; font-size: 1.1rem; color: #374151; }
+    .toc a { text-decoration: none; color: #4f46e5; }
+    .toc a:hover { text-decoration: underline; }
+    .file-tree { font-family: monospace; font-size: 0.875rem; line-height: 1.8; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem 1.25rem; }
+    .env-table td:first-child { font-family: monospace; font-size: 0.825rem; white-space: nowrap; }
+    .env-table td:nth-child(2) { font-size: 0.825rem; }
+  </style>
+</head>
+<body>
+
+<!-- Review status (hidden) -->
+<div style="display:none">
+  <table>
+    <thead><tr><th>Status</th><th>Date</th></tr></thead>
+    <tbody><tr><td>Approved</td><td>May 16, 2026</td></tr></tbody>
+  </table>
+</div>
+
+<div class="container" style="max-width: 860px;">
+
+  <!-- Breadcrumb -->
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="index.html">Docs</a></li>
+      <li class="breadcrumb-item active">Agent Server Configuration Guide</li>
+    </ol>
+  </nav>
+
+  <h1 class="display-6 fw-bold mb-1">Agent Server Configuration Guide</h1>
+  <p class="lead text-muted mb-4">Everything you can configure in the agent-server without touching its core code — environment variables, tools, system prompt, and server settings.</p>
+
+  <!-- TOC -->
+  <div class="card mb-5 border-0 bg-light">
+    <div class="card-body">
+      <h6 class="fw-bold mb-2">On this page</h6>
+      <ol class="toc mb-0 ps-3">
+        <li><a href="#overview">Overview</a></li>
+        <li><a href="#env-file">Environment variables (.env)</a></li>
+        <li><a href="#system-prompt">System prompt</a></li>
+        <li><a href="#tool-registry">Tool registry (tool-registry.json)</a></li>
+        <li><a href="#adding-a-tool">Adding a tool</a></li>
+        <li><a href="#schema-reference">Tool schema reference (schema.json)</a></li>
+        <li><a href="#handler-reference">Tool handler reference (handler.js)</a></li>
+        <li><a href="#server-port">Server port</a></li>
+        <li><a href="#request-body">Request body contract</a></li>
+        <li><a href="#log-format">Log format</a></li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- Overview -->
+  <h2 id="overview">Overview</h2>
+  <p>The agent-server has a layered configuration model. The separation is intentional — infrastructure (SAP AI Core credentials, port) lives in environment variables; domain logic (which tools exist and what they do) lives in plain JSON and JavaScript files that require no server restart to add.</p>
+
+  <div class="file-tree">
+    _DEMO/agent-server/<br>
+    ├── <strong>.env</strong>                        ← SAP AI Core credentials + server settings<br>
+    ├── <strong>lib/system-prompt.txt</strong>        ← LLM persona, tone, boundaries, and tool guidance<br>
+    ├── <strong>tools/tool-registry.json</strong>     ← declares which tools exist<br>
+    └── tools/<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;├── get_customer_summary/<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── <strong>schema.json</strong>         ← LLM tool definition (JSON Schema)<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── <strong>handler.js</strong>          ← execute(args, context) implementation<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;├── get_open_items/   …<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;└── …
+  </div>
+
+  <div class="tip-box mt-3 mb-4">
+    Adding a new tool requires <strong>zero changes to any server file</strong>. Create a <code>schema.json</code> and a <code>handler.js</code>, add one entry to <code>tool-registry.json</code>, and restart the server.
+  </div>
+
+  <!-- .env -->
+  <h2 id="env-file">Environment variables (.env)</h2>
+  <p>Create <code>_DEMO/agent-server/.env</code> by copying the template below. All variables are required unless marked optional.</p>
+
+  <div class="code-block mb-4">
+    <code># SAP AI Core — LLM inference
+AICORE_AUTH_URL=https://&lt;your-subaccount&gt;.authentication.&lt;region&gt;.hana.ondemand.com
+AICORE_BASE_URL=https://api.ai.prod.&lt;region&gt;.aws.ml.hana.ondemand.com
+AICORE_CLIENT_ID=sb-&lt;client-id&gt;!b&lt;num&gt;|aicore!b&lt;num&gt;
+AICORE_CLIENT_SECRET=&lt;client-secret&gt;
+
+AICORE_LLM_DEPLOYMENT_ID=&lt;deployment-id&gt;
+AICORE_LLM_MODEL=gpt-4o                    # optional — defaults to gpt-4o
+
+AICORE_RESOURCE_GROUP=default              # optional — defaults to "default"
+AICORE_API_VERSION=2024-02-01              # optional — defaults to 2024-02-01
+
+# Server
+PORT=3000                                  # optional — defaults to 3000</code>
+  </div>
+
+  <div class="table-responsive mb-4">
+    <table class="table table-bordered table-sm align-middle env-table">
+      <thead class="table-light">
+        <tr><th>Variable</th><th>Required</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>AICORE_AUTH_URL</td><td>✅</td>
+          <td>OAuth2 token endpoint base URL for your SAP BTP subaccount. Format: <code>https://&lt;subdomain&gt;.authentication.&lt;region&gt;.hana.ondemand.com</code>. The server appends <code>/oauth/token</code>.</td>
+        </tr>
+        <tr>
+          <td>AICORE_BASE_URL</td><td>✅</td>
+          <td>SAP AI Core inference API base URL. Format: <code>https://api.ai.prod.&lt;region&gt;.aws.ml.hana.ondemand.com</code>.</td>
+        </tr>
+        <tr>
+          <td>AICORE_CLIENT_ID</td><td>✅</td>
+          <td>OAuth2 client ID from your AI Core service binding.</td>
+        </tr>
+        <tr>
+          <td>AICORE_CLIENT_SECRET</td><td>✅</td>
+          <td>OAuth2 client secret from your AI Core service binding.</td>
+        </tr>
+        <tr>
+          <td>AICORE_LLM_DEPLOYMENT_ID</td><td>✅</td>
+          <td>The deployment ID of the LLM model you want to use. Find this in the AI Core resource group under "Deployments".</td>
+        </tr>
+        <tr>
+          <td>AICORE_LLM_MODEL</td><td></td>
+          <td>Model name passed in the request body. Default: <code>gpt-4o</code>. Must match what the deployment ID targets.</td>
+        </tr>
+        <tr>
+          <td>AICORE_RESOURCE_GROUP</td><td></td>
+          <td>AI Core resource group. Default: <code>default</code>. Sent as the <code>AI-Resource-Group</code> request header.</td>
+        </tr>
+        <tr>
+          <td>AICORE_API_VERSION</td><td></td>
+          <td>AI Core API version query parameter. Default: <code>2024-02-01</code>.</td>
+        </tr>
+        <tr>
+          <td>PORT</td><td></td>
+          <td>HTTP port the server listens on. Default: <code>3000</code>. See <a href="#server-port">Server port</a>.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="warning-box mb-4">
+    <strong>Security:</strong> Never commit <code>.env</code> to version control. The file contains OAuth2 credentials — treat it like a password. The <code>.gitignore</code> excludes it by default.
+  </div>
+
+  <h3>Variables no longer used</h3>
+  <p>These variables were present in earlier releases and can be removed from your <code>.env</code>:</p>
+  <ul>
+    <li><code>EPP_COMP_CODE</code> — removed in v2026.05.16.2031. Account context is now caller-supplied via the request body.</li>
+    <li><code>EPP_CUST_NUM</code> — same as above.</li>
+  </ul>
+
+  <!-- System prompt -->
+  <h2 id="system-prompt">System prompt</h2>
+  <p>The LLM's persona, tone, scope boundaries, and tool guidance are defined in <code>lib/system-prompt.txt</code>. This is the primary lever for customising the assistant's behaviour without writing code.</p>
+
+  <p>The file is loaded once at startup and prepended to every conversation as the <code>system</code> message. Edit it to:</p>
+  <ul>
+    <li>Change the assistant's name, persona, or tone.</li>
+    <li>Define what the assistant can and cannot do.</li>
+    <li>Describe each tool so the LLM knows when to call it (see the <code>## Tools available</code> section in the default prompt).</li>
+    <li>Set response format expectations (e.g. "use markdown", "keep responses under 4 paragraphs").</li>
+  </ul>
+
+  <div class="code-block mb-3">
+    <code>You are a billing collections agent for Cardinal Rx, an online specialty pharmacy.
+Your role is to help patients understand and resolve their outstanding balances…
+
+## Tools available
+- **get_customer_summary** — Best first call for general "what do I owe?" questions.
+- **get_open_items** — Detailed list of open invoices and/or credit memos.
+…</code>
+  </div>
+
+  <div class="tip-box mb-4">
+    Always include a <code>## Tools available</code> section that describes each registered tool, its purpose, and when to use it. The LLM uses these descriptions to decide which tool to call — a good description reduces unnecessary tool calls and improves answer quality.
+  </div>
+
+  <!-- Tool registry -->
+  <h2 id="tool-registry">Tool registry (tool-registry.json)</h2>
+  <p><code>tools/tool-registry.json</code> is the single configuration file that declares every tool the agent can use. Each entry maps a tool name to its schema and handler files.</p>
+
+  <div class="code-block mb-3">
+    <code>[
+  {
+    "name":          "get_customer_summary",
+    "statusMessage": "Pulling together your account summary…",
+    "schema":        "./tools/get_customer_summary/schema.json",
+    "handler":       "./tools/get_customer_summary/handler.js"
+  },
+  {
+    "name":          "get_open_items",
+    "statusMessage": "Retrieving your open invoices…",
+    "schema":        "./tools/get_open_items/schema.json",
+    "handler":       "./tools/get_open_items/handler.js"
+  }
+]</code>
+  </div>
+
+  <div class="table-responsive mb-4">
+    <table class="table table-bordered table-sm align-middle">
+      <thead class="table-light">
+        <tr><th>Field</th><th>Required</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>name</code></td><td>✅</td><td>Tool name — must match <code>function.name</code> in the tool's <code>schema.json</code>. Used by the LLM when it calls the tool.</td></tr>
+        <tr><td><code>statusMessage</code></td><td>✅</td><td>Short in-progress message shown in the chat widget while the tool is running (e.g. <em>"Retrieving your open invoices…"</em>). Keep it under ~60 characters.</td></tr>
+        <tr><td><code>schema</code></td><td>✅</td><td>Path to the tool's <code>schema.json</code>, relative to the agent-server root.</td></tr>
+        <tr><td><code>handler</code></td><td>✅</td><td>Path to the tool's <code>handler.js</code>, relative to the agent-server root.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="warning-box mb-4">
+    The MCP server reads <code>tool-registry.json</code> once at startup. After adding or removing tools, restart the agent-server for the changes to take effect.
+  </div>
+
+  <!-- Adding a tool -->
+  <h2 id="adding-a-tool">Adding a tool</h2>
+  <p>Follow these four steps. No server core files need to be modified.</p>
+
+  <h3><span class="step-badge">1</span>Create the tool directory</h3>
+  <div class="code-block mb-3">
+    <code>mkdir _DEMO/agent-server/tools/my_new_tool</code>
+  </div>
+
+  <h3><span class="step-badge">2</span>Write the schema (<code>schema.json</code>)</h3>
+  <p>Define the tool for the LLM using the OpenAI tool definition format:</p>
+  <div class="code-block mb-3">
+    <code>{
+  "type": "function",
+  "function": {
+    "name": "my_new_tool",
+    "description": "What this tool does — write this clearly so the LLM knows when to call it.",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "exampleParam": {
+          "type": "string",
+          "description": "What this parameter means."
+        }
+      },
+      "required": ["exampleParam"]
+    }
+  }
+}</code>
+  </div>
+
+  <h3><span class="step-badge">3</span>Write the handler (<code>handler.js</code>)</h3>
+  <p>Export a named <code>execute</code> async function that receives the LLM-supplied arguments and the caller's account context:</p>
+  <div class="code-block mb-3">
+    <code>export async function execute(args, context) {
+  // args    — object matching the parameters declared in schema.json
+  // context — { CompCode, CustNum } from the portal's init() call
+
+  const { exampleParam } = args;
+  const { CompCode, CustNum } = context;
+
+  // Call your backend API here — replace with real implementation
+  const data = await fetchFromYourApi(CompCode, CustNum, exampleParam);
+
+  return data; // return value is serialised to JSON and sent to the LLM
+}</code>
+  </div>
+
+  <h3><span class="step-badge">4</span>Register the tool in tool-registry.json</h3>
+  <p>Add one entry to <code>tools/tool-registry.json</code>:</p>
+  <div class="code-block mb-3">
+    <code>{
+  "name":          "my_new_tool",
+  "statusMessage": "Fetching your data…",
+  "schema":        "./tools/my_new_tool/schema.json",
+  "handler":       "./tools/my_new_tool/handler.js"
+}</code>
+  </div>
+
+  <p>Then update <code>lib/system-prompt.txt</code> to describe the new tool in the <code>## Tools available</code> section so the LLM knows when to call it. Restart the server.</p>
+
+  <div class="tip-box mb-4">
+    The <code>execute</code> function can call other handlers directly — no need to go through the MCP layer. The existing <code>get_customer_summary</code> handler delegates to <code>get_open_items</code> and <code>get_customer_details</code> this way to avoid duplicating fixture data.
+  </div>
+
+  <!-- Schema reference -->
+  <h2 id="schema-reference">Tool schema reference (schema.json)</h2>
+  <p>Each tool's <code>schema.json</code> is an <strong>OpenAI function definition</strong>. It controls what the LLM sees — the name, description, and parameter types that the model uses to decide when and how to call the tool.</p>
+
+  <div class="table-responsive mb-4">
+    <table class="table table-bordered table-sm align-middle">
+      <thead class="table-light">
+        <tr><th>Field</th><th>Required</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>type</code></td><td>✅</td><td>Always <code>"function"</code>.</td></tr>
+        <tr><td><code>function.name</code></td><td>✅</td><td>Tool identifier — must match the <code>name</code> in <code>tool-registry.json</code>. Use <code>snake_case</code>.</td></tr>
+        <tr><td><code>function.description</code></td><td>✅</td><td>Natural-language description of what the tool does and when to use it. This is the most important field for tool-selection quality.</td></tr>
+        <tr><td><code>function.parameters</code></td><td>✅</td><td>JSON Schema object describing the tool's input parameters. Use <code>type</code>, <code>properties</code>, <code>description</code>, <code>enum</code>, and <code>required</code> as needed.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Supported parameter types</h3>
+  <div class="code-block mb-3">
+    <code>"parameters": {
+  "type": "object",
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["open", "paid", "pending"],
+      "description": "Filter by payment status."
+    },
+    "fromDate": {
+      "type": "string",
+      "description": "ISO date (YYYY-MM-DD) — earliest document date filter."
+    },
+    "$top": {
+      "type": "integer",
+      "description": "Max records to return."
+    },
+    "includeDetails": {
+      "type": "boolean",
+      "description": "When true, returns full line-item breakdown."
+    }
+  },
+  "required": ["status"]
+}</code>
+  </div>
+
+  <div class="tip-box mb-3">
+    Every parameter description is sent to the LLM in the <code>tools/list</code> response. Write descriptions as instructions to the model — e.g. <em>"Use 'D' to get both invoices and credit memos (default)"</em> rather than just <em>"document type"</em>.
+  </div>
+
+  <div class="warning-box mb-4">
+    Do not declare a <code>_context</code> parameter in your schema. The MCP layer reserves this name to thread account context from the client to the handler. Declaring it would expose it as an LLM-settable argument.
+  </div>
+
+  <!-- Handler reference -->
+  <h2 id="handler-reference">Tool handler reference (handler.js)</h2>
+  <p>Every handler is a plain ES module that exports one named async function: <code>execute</code>.</p>
+
+  <div class="code-block mb-3">
+    <code>/**
+ * @param {object} args     - LLM-supplied arguments matching schema.json parameters
+ * @param {object} context  - Account context from the portal: { CompCode, CustNum }
+ * @returns {*}             - Any JSON-serialisable value; sent back to the LLM as a tool result
+ */
+export async function execute(args, context) {
+  // implementation
+}</code>
+  </div>
+
+  <h3>The context object</h3>
+  <p>The second argument, <code>context</code>, is the exact object the portal passed in <code>init({ context: { … } })</code>. It is never generated by the LLM — it comes from the authenticated session and is injected by the MCP layer.</p>
+
+  <div class="table-responsive mb-4">
+    <table class="table table-bordered table-sm align-middle">
+      <thead class="table-light">
+        <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>context.CompCode</code></td><td>string</td><td>SAP company code (e.g. <code>"1000"</code>). Identifies which company the account belongs to.</td></tr>
+        <tr><td><code>context.CustNum</code></td><td>string</td><td>Zero-padded customer number (e.g. <code>"0000123456"</code>). Identifies the individual account.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Return value</h3>
+  <p>Return any JSON-serialisable value — object, array, or primitive. The MCP layer wraps it in <code>JSON.stringify()</code> and sends it back to the LLM as the tool result. The LLM uses the result to construct the final answer.</p>
+
+  <div class="code-block mb-3">
+    <code>// ✅ Good — structured data the LLM can reason about
+return { balance: 584.00, currency: 'USD', overdue: true };
+
+// ✅ Also fine — an array of records
+return { d: { results: [ { InvoiceNum: 'INV-2025-0112', … } ] } };
+
+// ❌ Avoid — plain strings lose structure
+return 'The balance is $584.00';</code>
+  </div>
+
+  <h3>Error handling</h3>
+  <p>If <code>execute</code> throws, the MCP layer catches the error and returns a structured error result to the LLM:</p>
+  <div class="code-block mb-3">
+    <code>{ "error": "Tool get_open_items failed — please try again." }</code>
+  </div>
+  <p>You don't need to catch errors yourself unless you want to return a more specific error message or log additional context.</p>
+
+  <!-- Server port -->
+  <h2 id="server-port">Server port</h2>
+  <p>The server listens on port <code>3000</code> by default. Override with the <code>PORT</code> environment variable in <code>.env</code>:</p>
+  <div class="code-block mb-3">
+    <code>PORT=8090</code>
+  </div>
+  <p>If you change the port, update the widget's <code>ai_endpoint</code> and the bundle URL in your portal accordingly.</p>
+
+  <!-- Request body contract -->
+  <h2 id="request-body">Request body contract</h2>
+  <p>The agent-server exposes a single endpoint for the widget: <code>POST /ask-assistant</code>. This is what the widget sends on every message.</p>
+
+  <h3>Request</h3>
+  <div class="code-block mb-3">
+    <code>POST /ask-assistant
+Authorization: Bearer &lt;bearer_token&gt;
+Content-Type: application/json
+
+{
+  "message": "What is my current balance?",
+  "history": [
+    { "role": "user",      "content": "previous message" },
+    { "role": "assistant", "content": "previous reply" }
+  ],
+  "context": {
+    "CompCode": "1000",
+    "CustNum":  "0000123456"
+  }
+}</code>
+  </div>
+
+  <div class="table-responsive mb-3">
+    <table class="table table-bordered table-sm align-middle">
+      <thead class="table-light">
+        <tr><th>Field</th><th>Required</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>message</code></td><td>✅</td><td>The user's current message. Non-empty string.</td></tr>
+        <tr><td><code>history</code></td><td></td><td>Array of prior conversation turns in <code>{ role, content }</code> format. Defaults to <code>[]</code>. Capped by the widget's <code>max_turns</code> setting.</td></tr>
+        <tr><td><code>context</code></td><td></td><td>Account context object — passed through to every tool handler. Defaults to <code>{}</code> if omitted. Must include <code>CompCode</code> and <code>CustNum</code> for tools to return data.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Response (SSE stream)</h3>
+  <p>The server responds with a Server-Sent Events stream. Three event types are emitted:</p>
+  <div class="code-block mb-3">
+    <code>HTTP 200 OK
+Content-Type: text/event-stream
+
+# During tool execution (one per tool call):
+data: {"status": "Retrieving your open invoices…"}
+
+# Final answer — one chunk per SSE event, accumulated by the widget:
+data: {"message": "Your current balance is **$584.00**."}
+data: {"message": " You have 3 open invoices."}
+
+# End of stream:
+data: [DONE]</code>
+  </div>
+
+  <p>The widget renders <code>status</code> events as an in-progress indicator in the chat panel and assembles <code>message</code> chunks into the final answer as they arrive.</p>
+
+  <!-- Log format -->
+  <h2 id="log-format">Log format</h2>
+  <p>All agent-server log lines follow the pattern:</p>
+  <div class="code-block mb-3">
+    <code>YYYY-MM-DD HH:MM:SS [label]       message</code>
+  </div>
+
+  <p>A typical request flow looks like this:</p>
+  <div class="code-block mb-4">
+    <code>2026-05-16 20:31:14 [request]     message="What is my balance?"  history=0 turns  context={"CompCode":"1000","CustNum":"0000123456"}
+2026-05-16 20:31:15 [ai-core]     turn-1  812ms  finish=tool_calls  tokens=312  (prompt=298 + completion=14)
+2026-05-16 20:31:15 [agent]       tool_calls: get_customer_summary
+2026-05-16 20:31:15 [mcp]         → get_customer_summary  "Pulling together your account summary…"  args={}
+2026-05-16 20:31:15 [mcp]         ← get_customer_summary  4ms  result={"d":{"results":[…
+2026-05-16 20:31:15 [ai-core]     turn-2  streaming...
+2026-05-16 20:31:17 [ai-core]     turn-2  1923ms  chars=387
+2026-05-16 20:31:17 [done]        total=2741ms</code>
+  </div>
+
+  <div class="table-responsive mb-4">
+    <table class="table table-bordered table-sm align-middle">
+      <thead class="table-light">
+        <tr><th>Label</th><th>When emitted</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>[server]</code></td><td>Server startup — ports and routes</td></tr>
+        <tr><td><code>[request]</code></td><td>Each incoming <code>POST /ask-assistant</code></td></tr>
+        <tr><td><code>[ai-core]</code></td><td>Each LLM API call — duration, finish reason, token counts</td></tr>
+        <tr><td><code>[agent]</code></td><td>Whether the LLM chose to call tools or answer directly</td></tr>
+        <tr><td><code>[mcp]</code></td><td>Each tool call — name, status message, args, duration, result preview</td></tr>
+        <tr><td><code>[done]</code></td><td>End of request — total wall-clock duration</td></tr>
+        <tr><td><code>[error]</code></td><td>Unhandled exceptions</td></tr>
+        <tr><td><code>[mcp-server]</code></td><td>Internal MCP subprocess events (written to stderr)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p>In demo / test mode (<code>./deploy/go.sh --env test</code>), logs are written to <code>_DEMO/agent-server.log</code> and tailed live in the terminal.</p>
+
+  <!-- Related -->
+  <h2 id="related">Related</h2>
+  <ul>
+    <li><a href="component-integration-guide.html">Integration Guide</a> — embed the widget in your portal</li>
+    <li><a href="component-error-handling.html">Error Handling</a> — API contract and error behaviour</li>
+    <li><a href="concept-theming.html">Theming</a> — customize widget colors and fonts</li>
+  </ul>
+
+  <hr class="mt-5">
+  <p class="text-muted small">HeadlessAssistant · Apache-2.0 · Last updated May 16, 2026</p>
+</div>
+
+</body>
+</html>

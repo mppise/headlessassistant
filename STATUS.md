@@ -9,7 +9,7 @@ license: Apache-2.0 (see LICENSE in project root)
 
 > **Overall health:** 🟢 On Track
 > **Last updated:** 2026-05-16
-> **Active phase:** Development — CHG-001 (C02-AgentServerTools) complete
+> **Active phase:** Development — CHG-002 (C02-AgentServerTools MCP) complete
 
 ---
 
@@ -20,7 +20,7 @@ license: Apache-2.0 (see LICENSE in project root)
 | Ideation | ✅ | 2026-05-15 | 2026-05-15 | SpecGantry | Complete — A_Project.md agreed, all assumptions approved |
 | Planning | ✅ | 2026-05-15 | 2026-05-15 | SpecGantry | Complete — B_Architecture.md agreed, all decisions and risks actioned |
 | Detailed Design | ✅ | 2026-05-15 | 2026-05-16 | SpecGantry | CHG-001 complete — C02-AgentServerTools spec agreed |
-| Development | ✅ | 2026-05-15 | 2026-05-15 | SpecGantry | Complete — C01-HeadlessAssistant built, linted, documented |
+| Development | ✅ | 2026-05-15 | 2026-05-16 | SpecGantry | Complete — C01-HeadlessAssistant (23 features) + C02-AgentServerTools (CHG-001 plugin registry, CHG-002 MCP stdio server, request logging, start.sh) |
 | Deployment Readiness | ✅ | 2026-05-15 | 2026-05-15 | SpecGantry | Complete — Audit PASS, go.sh created, v2026.05.15.2146 marked ready |
 
 > **Status key:** ⬜ Not started · 🔄 In progress · ✅ Complete · 🔴 Blocked
@@ -32,7 +32,7 @@ license: Apache-2.0 (see LICENSE in project root)
 | **Component** | **Status** | **Design started** | **Design ready** | **Dev started** | **Dev complete** | **Blocked by** | **Notes** |
 | :------------ | :--------: | :----------------: | :--------------: | :-------------: | :--------------: | :------------- | :-------- |
 | C01-HeadlessAssistant | ✅ | 2026-05-15 | 2026-05-15 | 2026-05-15 | 2026-05-15 | | All 23 features complete |
-| C02-AgentServerTools | ✅ | 2026-05-16 | 2026-05-16 | 2026-05-16 | 2026-05-16 | | CHG-001: plugin tool registry — 6 features complete |
+| C02-AgentServerTools | ✅ | 2026-05-16 | 2026-05-16 | 2026-05-16 | 2026-05-16 | | CHG-001 + CHG-002: plugin registry + MCP stdio server — 12 features complete |
 
 ---
 

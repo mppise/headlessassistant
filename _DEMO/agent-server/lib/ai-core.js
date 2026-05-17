@@ -54,10 +54,11 @@ export async function callAiCore(token, overrides) {
   return overrides.stream ? aiRes : aiRes.json();
 }
 
-// Proxies an AI Core SSE response to the browser via send.chunk().
+// Proxies an AI Core SSE response to the browser via send.chunk(). Returns total chars streamed.
 export async function streamResponse(aiRes, send) {
   const decoder = new TextDecoder();
   let buffer = '';
+  let totalChars = 0;
   for await (const rawChunk of aiRes.body) {
     buffer += decoder.decode(rawChunk, { stream: true });
     const events = buffer.split('\n\n');
@@ -70,7 +71,8 @@ export async function streamResponse(aiRes, send) {
       let parsed;
       try { parsed = JSON.parse(payload); } catch { continue; }
       const content = parsed?.choices?.[0]?.delta?.content;
-      if (content) send.chunk(content);
+      if (content) { send.chunk(content); totalChars += content.length; }
     }
   }
+  return totalChars;
 }

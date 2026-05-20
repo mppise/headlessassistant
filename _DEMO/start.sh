@@ -11,13 +11,13 @@ install_deps() {
   npm install --prefix "$dir" --silent
 }
 
-# Kill both servers and remove node_modules on exit
+# Kill all servers and remove node_modules on exit
 cleanup() {
   set +e
   echo ""
   echo "Stopping servers..."
-  kill "$PORTAL_PID" "$AGENT_PID" 2>/dev/null
-  wait "$PORTAL_PID" "$AGENT_PID" 2>/dev/null
+  kill "$PORTAL_PID" "$AGENT_PID" "$INSPECTOR_PID" 2>/dev/null
+  wait "$PORTAL_PID" "$AGENT_PID" "$INSPECTOR_PID" 2>/dev/null
   echo "Cleaning up node_modules..."
   rm -rf "$DEMO_DIR/agent-server/node_modules"
   rm -rf "$DEMO_DIR/payment-portal/node_modules"
@@ -35,8 +35,12 @@ PORTAL_PID=$!
 
 echo "Starting agent-server   ->  http://localhost:3000"
 : > "$AGENT_LOG"
-stdbuf -oL -eL node "$DEMO_DIR/agent-server/server.js" >> "$AGENT_LOG" 2>&1 &
+node "$DEMO_DIR/agent-server/server.js" >> "$AGENT_LOG" 2>&1 &
 AGENT_PID=$!
+
+echo "Opening MCP Inspector..."
+npx @modelcontextprotocol/inspector node "$DEMO_DIR/agent-server/lib/mcp-server.js" &
+INSPECTOR_PID=$!
 
 echo ""
 echo "┌─────────────────────────────────────────────────────┐"

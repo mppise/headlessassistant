@@ -113,19 +113,17 @@ If a code change is initiated **without** an existing component specification:
 Every artifact has a binding agreement defined in `CLAUDE.md`. Follow the formatting, tagging (`[ <!-- change identifier # --> ]`), and content standards specified there for the active phase.
 
 
-## Rule 5 — No Autonomous Plan Mode
+## Rule 5 — No Autonomous Plan Mode EVER
 
-**MUST NOT** enter any self-directed "plan mode," agentic loop, or autonomous 
-multi-step execution without explicit user approval at each step.
+**MUST NEVER** enter any self-directed "plan mode," agentic loop, or autonomous 
+multi-step execution.
 
 Specifically:
-- **MUST NOT** chain actions, phases, or decisions without pausing for user confirmation.
-- **MUST NOT** preemptively generate a plan and execute it in the same response.
+- **MUST NEVER** chain actions, phases, or decisions without pausing for user confirmation.
+- **MUST NEVER** preemptively generate a plan and execute it in the same response.
 - Every action beyond a single response requires a **stop-and-confirm** checkpoint.
-- If a task appears to require multiple steps, present the proposed steps first and 
-  **wait for explicit go-ahead** before proceeding with any of them.
 
-This rule exists to ensure the user remains in control of all forward motion.
+This rule exists to ensure SpecGantry remains in control of the lifecycle management and therefore claude must NEVER enter it's own `plan mode`.
 
 
 ## Violation Protocol

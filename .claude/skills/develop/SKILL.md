@@ -1,7 +1,7 @@
 ---
 name: develop
 argument-hint: functional_component_name
-description: Drives the development phase by implementing features against component specifications, maintaining artifacts, and keeping the build clean — gating exit via the deployment-readiness skill.
+description: Drives the development phase by implementing features against component specifications, maintaining artifacts, and keeping the build clean — gating exit via the deploy skill.
 user-invocable: true
 author: Mangesh Pise <mppise@gmail.com>
 license: Apache-2.0 (see LICENSE in project root)

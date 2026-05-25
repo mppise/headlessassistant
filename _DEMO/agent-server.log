@@ -1,0 +1,42 @@
+2026-05-25 16:06:09 [server]     Agent server  →  http://localhost:3000
+2026-05-25 16:06:09 [server]       GET  /headless-assistant.js   widget bundle
+2026-05-25 16:06:09 [server]       POST /ask-assistant            collections agent
+2026-05-25 16:11:05 [request]    message="how much do i owe? dont need to see all the details"  history=0 turns  context={}
+2026-05-25 16:11:07 [ai-core]    turn-1  1408ms  finish=tool_calls  tokens=1068  (prompt=1056 + completion=12)
+2026-05-25 16:11:07 [agent]      tool_calls: get_customer_summary
+2026-05-25 16:11:07 [mcp]        → get_customer_summary  "Pulling together your account summary…"  args={}
+2026-05-25 16:11:07 [mcp-server] get_customer_summary  0ms
+2026-05-25 16:11:07 [mcp]        ← get_customer_summary  43ms  result={"customer":{"BusinessPartner":"0000123456","BusinessPartnerName":"DOCTORS PARK PHARMACY","OrganizationBPName1":"DOCTORS…
+2026-05-25 16:11:07 [ai-core]    turn-2  streaming...
+2026-05-25 16:11:09 [ai-core]    turn-2  1210ms  chars=285
+2026-05-25 16:11:09 [done]       total=3277ms
+2026-05-25 16:11:47 [request]    message="how many invoices are these?"  history=2 turns  context={}
+2026-05-25 16:11:48 [ai-core]    turn-1  1073ms  finish=tool_calls  tokens=1155  (prompt=1139 + completion=16)
+2026-05-25 16:11:48 [agent]      tool_calls: get_open_items
+2026-05-25 16:11:48 [mcp]        → get_open_items  "Retrieving your open invoices…"  args={"Scenario":"I"}
+2026-05-25 16:11:48 [mcp-server] get_open_items  0ms
+2026-05-25 16:11:48 [mcp]        ← get_open_items  1ms  result={"d":{"results":[{"CompCode":"1000","CustNum":"0000123456","InvoiceNum":"INV-2024-0091","InvoiceDate":"/Date(17115840000…
+2026-05-25 16:11:48 [ai-core]    turn-2  streaming...
+2026-05-25 16:11:49 [ai-core]    turn-2  1225ms  chars=436
+2026-05-25 16:11:49 [done]       total=2301ms
+2026-05-25 16:12:13 [request]    message="show me the details of th ne with about $600"  history=4 turns  context={}
+2026-05-25 16:12:14 [ai-core]    turn-1  1090ms  finish=tool_calls  tokens=1299  (prompt=1283 + completion=16)
+2026-05-25 16:12:14 [agent]      tool_calls: get_open_items
+2026-05-25 16:12:14 [mcp]        → get_open_items  "Retrieving your open invoices…"  args={"Scenario":"D"}
+2026-05-25 16:12:14 [mcp-server] get_open_items  0ms
+2026-05-25 16:12:14 [mcp]        ← get_open_items  2ms  result={"d":{"results":[{"CompCode":"1000","CustNum":"0000123456","InvoiceNum":"INV-2024-0091","InvoiceDate":"/Date(17115840000…
+2026-05-25 16:12:14 [ai-core]    turn-2  streaming...
+2026-05-25 16:12:15 [ai-core]    turn-2  1385ms  chars=511
+2026-05-25 16:12:15 [done]       total=2477ms
+2026-05-25 16:12:31 [request]    message="can i pay this one now?"  history=6 turns  context={}
+2026-05-25 16:12:35 [ai-core]    turn-1  4662ms  finish=stop  tokens=1534  (prompt=1443 + completion=91)
+2026-05-25 16:12:35 [agent]      direct answer  chars=380
+2026-05-25 16:12:35 [done]       total=4664ms
+2026-05-25 16:13:03 [request]    message="what if i dont have credit card or bank account?"  history=8 turns  context={}
+2026-05-25 16:13:05 [ai-core]    turn-1  2491ms  finish=stop  tokens=1753  (prompt=1551 + completion=202)
+2026-05-25 16:13:05 [agent]      direct answer  chars=894
+2026-05-25 16:13:05 [done]       total=2492ms
+2026-05-25 16:13:38 [request]    message="who can i talk to live in-person right now about this?"  history=10 turns  context={}
+2026-05-25 16:13:40 [ai-core]    turn-1  1509ms  finish=stop  tokens=1858  (prompt=1772 + completion=86)
+2026-05-25 16:13:40 [agent]      direct answer  chars=408
+2026-05-25 16:13:40 [done]       total=1509ms

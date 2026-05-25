@@ -4,7 +4,7 @@
 
 import fs   from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import { fileURLToPath, pathToFileURL } from 'url';
 import { McpServer }           from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { convertJsonSchemaToZod } from 'zod-from-json-schema';
@@ -22,7 +22,7 @@ const server = new McpServer({ name: 'agent-tools', version: '1.0.0' });
 for (const entry of registry) {
   const schema     = JSON.parse(fs.readFileSync(path.join(ROOT, entry.schema), 'utf8'));
   const zodSchema  = convertJsonSchemaToZod(schema.function.parameters);
-  const { execute } = await import(path.join(ROOT, entry.handler));
+  const { execute } = await import(pathToFileURL(path.join(ROOT, entry.handler)).href);
 
   server.tool(
     entry.name,

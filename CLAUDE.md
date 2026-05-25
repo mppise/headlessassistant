@@ -124,7 +124,7 @@ Read and update `./STATUS.md` at the beginning and end of every phase, phase tra
 
 **Entry point for:** after `Development: Complete` is confirmed in STATUS.md.
 
-**Skill:** `/deployment-readiness`
+**Skill:** `/deploy`
 
 **Read-only phase** — MUST NOT modify `./src/` or any component specification during this phase.
 

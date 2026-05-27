@@ -19,7 +19,7 @@ license: Apache-2.0 (see LICENSE in project root)
 
 | Total | Pending `[ ]` | Approved `[X]` | Rejected `[-]` | Deferred `[>]` |
 | :---: | :-----------: | :------------: | :------------: | :------------: |
-| 10 | 0 | 10 | 0 | 0 |
+| 12 | 0 | 12 | 0 | 0 |
 
 ---
 
@@ -29,6 +29,7 @@ license: Apache-2.0 (see LICENSE in project root)
 | :----: | :- | :------- | :-------- | :-------------------- | :----- | :---- | :---- |
 | `[X]` | D-ARCH-HA000001 | Single monolithic component (`C01-HeadlessAssistant`) owns all capabilities | No inter-component wiring needed for a single-file client bundle | Multi-component decomposition (C01-Widget + C02-APIClient + C03-HistoryManager) | All logic in one file; requires disciplined internal module organization | DevAgent | Confirmed in Planning |
 | `[X]` | D-ARCH-HA000002 | Fail fast on all errors; user-initiated retry only; no automatic retries | Automatic retry risks duplicate messages sent to API and confuses users | Auto-retry with exponential backoff | User must explicitly retry; integrator API should be idempotent | DevAgent | Confirmed in Planning |
+| `[X]` | D-ARCH-HA000003 | C03-AgentServerPy is a demo-infrastructure component residing in `_DEMO/` — it is outside the core product scope defined in `A_Project.md` and therefore has no REQ-NNNN traceability requirement | The `_DEMO/` subsystem is developer tooling, not a shipping product artifact | Adding REQs to A_Project.md for demo infrastructure | Component spec is written to the same quality standard but traceability index is not updated (no product REQs apply) | DevAgent | Confirmed Detailed Design 2026-05-27 |
 
 ## Technology & Libraries
 
@@ -42,6 +43,7 @@ license: Apache-2.0 (see LICENSE in project root)
 | `[X]` | D-TECH-HA000003 | Browser `EventSource` API + `fetch` with `ReadableStream` for SSE streaming | Native browser APIs; zero dependencies | Custom XHR streaming, third-party SSE libraries | Must handle both standard SSE and custom chunked formats | DevAgent | Confirmed in Planning |
 | `[X]` | D-TECH-HA000004 | No automated testing for MVP; manual validation via `demo/index.html` | Simplicity; no build toolchain required | Jest, Vitest | Regression risk is higher; manual discipline required | DevAgent | Confirmed in Planning — DevAgent changed mind from Option B (unit tests) |
 | `[X]` | D-TECH-HA000005 | ESLint + Prettier as dev-time linting/formatting tools | Industry standard; enforces consistency without runtime cost | No tooling | Dev dependencies only; not bundled into the distributable | DevAgent | Confirmed in Planning |
+| `[X]` | D-TECH-HA000006 | C03-AgentServerPy uses Python 3.11+ with `FastAPI` + `uvicorn` for the HTTP server, `mcp` (Python MCP SDK) for stdio MCP transport, `httpx` for async HTTP (AI Core OAuth2 + completions), and `python-dotenv` for `.env` loading | FastAPI + uvicorn is the idiomatic Python equivalent of Express + Node; httpx is async-first unlike requests; mcp SDK has an official Python implementation | Flask (sync-only, no SSE first-class support), aiohttp (less ergonomic), raw asyncio | Requires Python 3.11+; no Node.js runtime dependency | DevAgent | Confirmed Detailed Design 2026-05-27 |
 
 ## Product & UX
 
@@ -87,3 +89,4 @@ license: Apache-2.0 (see LICENSE in project root)
 | ID | Description | Date | Author |
 | :- | :---------- | :--: | :----- |
 | — | Initial decisions seeded from Planning interview | 2026-05-15 | SpecGantry |
+| — | Added D-ARCH-HA000003, D-TECH-HA000006 for C03-AgentServerPy Detailed Design | 2026-05-27 | SpecGantry |

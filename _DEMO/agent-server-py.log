@@ -1,0 +1,65 @@
+2026-05-27 09:53:15 [server]     Agent server  →  http://localhost:3001
+2026-05-27 09:53:15 [server]       GET  /headless-assistant.js   widget bundle
+2026-05-27 09:53:15 [server]       POST /ask-assistant            collections agent
+2026-05-27 09:53:29 [request]    message="hi"  history=0 turns  context={}
+2026-05-27 09:53:31 [ai-core]    turn-1  1370ms  finish=stop  tokens=969  (prompt=952 + completion=17)
+2026-05-27 09:53:31 [agent]      direct answer  chars=67
+2026-05-27 09:53:31 [done]       total=1960ms
+2026-05-27 09:53:48 [request]    message="how many invoices am i supposed to pay? dont list all of them"  history=2 turns  context={}
+2026-05-27 09:53:49 [ai-core]    turn-1  878ms  finish=tool_calls  tokens=1001  (prompt=989 + completion=12)
+2026-05-27 09:53:49 [agent]      tool_calls: get_customer_summary
+2026-05-27 09:53:49 [mcp]        → get_customer_summary  "Pulling together your account summary…"  args={}
+2026-05-27 09:53:49 [mcp-server] get_customer_summary  0ms
+2026-05-27 09:53:49 [mcp]        ← get_customer_summary  5ms  result={"customer": {"BusinessPartner": "0000123456", "BusinessPartnerName": "DOCTORS PARK PHARMACY", "OrganizationBPName1": "D…
+2026-05-27 09:53:49 [ai-core]    turn-2  streaming...
+2026-05-27 09:53:51 [ai-core]    turn-2  2135ms  chars=420
+2026-05-27 09:53:51 [done]       total=3021ms
+2026-05-27 09:54:10 [request]    message="and what do you know about me?"  history=4 turns  context={}
+2026-05-27 09:54:11 [ai-core]    turn-1  990ms  finish=tool_calls  tokens=1118  (prompt=1106 + completion=12)
+2026-05-27 09:54:11 [agent]      tool_calls: get_customer_details
+2026-05-27 09:54:11 [mcp]        → get_customer_details  "Fetching your account details…"  args={}
+2026-05-27 09:54:11 [mcp-server] get_customer_details  0ms
+2026-05-27 09:54:11 [mcp]        ← get_customer_details  3ms  result={"d": {"BusinessPartner": "0000123456", "BusinessPartnerName": "DOCTORS PARK PHARMACY", "OrganizationBPName1": "DOCTORS …
+2026-05-27 09:54:11 [ai-core]    turn-2  streaming...
+2026-05-27 09:54:13 [ai-core]    turn-2  1979ms  chars=584
+2026-05-27 09:54:13 [done]       total=2975ms
+2026-05-27 09:54:52 [request]    message="can i use 3310 to pay the invoice with highest value and then visa for all the r…"  history=6 turns  context={}
+2026-05-27 09:54:53 [ai-core]    turn-1  1266ms  finish=tool_calls  tokens=1331  (prompt=1315 + completion=16)
+2026-05-27 09:54:53 [agent]      tool_calls: get_open_items
+2026-05-27 09:54:53 [mcp]        → get_open_items  "Retrieving your open invoices…"  args={"Scenario":"I"}
+2026-05-27 09:54:53 [mcp-server] get_open_items  0ms
+2026-05-27 09:54:53 [mcp]        ← get_open_items  6ms  result={"d": {"results": [{"CompCode": "1000", "CustNum": "0000123456", "InvoiceNum": "INV-2024-0091", "InvoiceDate": "/Date(17…
+2026-05-27 09:54:53 [ai-core]    turn-2  streaming...
+2026-05-27 09:54:55 [ai-core]    turn-2  1989ms  chars=700
+2026-05-27 09:54:55 [done]       total=3263ms
+2026-05-27 09:55:07 [request]    message="exit"  history=8 turns  context={}
+2026-05-27 09:55:12 [error]      
+an error occurred during closing of asynchronous generator <async_generator object stdio_client at 0x1042befb0>
+asyncgen: <async_generator object stdio_client at 0x1042befb0>
+  + Exception Group Traceback (most recent call last):
+  |   File "/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/site-packages/anyio/_backends/_asyncio.py", line 799, in __aexit__
+  |     raise BaseExceptionGroup(
+  |         "unhandled errors in a TaskGroup", self._exceptions
+  |     ) from None
+  | BaseExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)
+  +-+---------------- 1 ----------------
+    | Traceback (most recent call last):
+    |   File "/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/site-packages/mcp/client/stdio/__init__.py", line 189, in stdio_client
+    |     yield read_stream, write_stream
+    | GeneratorExit
+    +------------------------------------
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/site-packages/mcp/client/stdio/__init__.py", line 183, in stdio_client
+    anyio.create_task_group() as tg,
+    ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/site-packages/anyio/_backends/_asyncio.py", line 805, in __aexit__
+    if self.cancel_scope.__exit__(type(exc), exc, exc.__traceback__):
+       ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/site-packages/anyio/_backends/_asyncio.py", line 455, in __exit__
+    raise RuntimeError(
+    ...<2 lines>...
+    )
+RuntimeError: Attempted to exit cancel scope in a different task than it was entered in

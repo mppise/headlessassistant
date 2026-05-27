@@ -2,7 +2,7 @@ const accountId = document.getElementById('nav-account-id').textContent.replace(
 const userName = document.getElementById('nav-user-name').textContent.trim();
 
 HeadlessAssistant.init({
-  ai_endpoint: 'http://localhost:3000/ask-assistant',
+  ai_endpoint: 'http://localhost:3001/ask-assistant',
   bearer_token: 'demo-local',
   customer_id: accountId,
   user_name: userName,

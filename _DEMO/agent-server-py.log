@@ -1,41 +1,44 @@
-2026-05-27 09:53:15 [server]     Agent server  →  http://localhost:3001
-2026-05-27 09:53:15 [server]       GET  /headless-assistant.js   widget bundle
-2026-05-27 09:53:15 [server]       POST /ask-assistant            collections agent
-2026-05-27 09:53:29 [request]    message="hi"  history=0 turns  context={}
-2026-05-27 09:53:31 [ai-core]    turn-1  1370ms  finish=stop  tokens=969  (prompt=952 + completion=17)
-2026-05-27 09:53:31 [agent]      direct answer  chars=67
-2026-05-27 09:53:31 [done]       total=1960ms
-2026-05-27 09:53:48 [request]    message="how many invoices am i supposed to pay? dont list all of them"  history=2 turns  context={}
-2026-05-27 09:53:49 [ai-core]    turn-1  878ms  finish=tool_calls  tokens=1001  (prompt=989 + completion=12)
-2026-05-27 09:53:49 [agent]      tool_calls: get_customer_summary
-2026-05-27 09:53:49 [mcp]        → get_customer_summary  "Pulling together your account summary…"  args={}
-2026-05-27 09:53:49 [mcp-server] get_customer_summary  0ms
-2026-05-27 09:53:49 [mcp]        ← get_customer_summary  5ms  result={"customer": {"BusinessPartner": "0000123456", "BusinessPartnerName": "DOCTORS PARK PHARMACY", "OrganizationBPName1": "D…
-2026-05-27 09:53:49 [ai-core]    turn-2  streaming...
-2026-05-27 09:53:51 [ai-core]    turn-2  2135ms  chars=420
-2026-05-27 09:53:51 [done]       total=3021ms
-2026-05-27 09:54:10 [request]    message="and what do you know about me?"  history=4 turns  context={}
-2026-05-27 09:54:11 [ai-core]    turn-1  990ms  finish=tool_calls  tokens=1118  (prompt=1106 + completion=12)
-2026-05-27 09:54:11 [agent]      tool_calls: get_customer_details
-2026-05-27 09:54:11 [mcp]        → get_customer_details  "Fetching your account details…"  args={}
-2026-05-27 09:54:11 [mcp-server] get_customer_details  0ms
-2026-05-27 09:54:11 [mcp]        ← get_customer_details  3ms  result={"d": {"BusinessPartner": "0000123456", "BusinessPartnerName": "DOCTORS PARK PHARMACY", "OrganizationBPName1": "DOCTORS …
-2026-05-27 09:54:11 [ai-core]    turn-2  streaming...
-2026-05-27 09:54:13 [ai-core]    turn-2  1979ms  chars=584
-2026-05-27 09:54:13 [done]       total=2975ms
-2026-05-27 09:54:52 [request]    message="can i use 3310 to pay the invoice with highest value and then visa for all the r…"  history=6 turns  context={}
-2026-05-27 09:54:53 [ai-core]    turn-1  1266ms  finish=tool_calls  tokens=1331  (prompt=1315 + completion=16)
-2026-05-27 09:54:53 [agent]      tool_calls: get_open_items
-2026-05-27 09:54:53 [mcp]        → get_open_items  "Retrieving your open invoices…"  args={"Scenario":"I"}
-2026-05-27 09:54:53 [mcp-server] get_open_items  0ms
-2026-05-27 09:54:53 [mcp]        ← get_open_items  6ms  result={"d": {"results": [{"CompCode": "1000", "CustNum": "0000123456", "InvoiceNum": "INV-2024-0091", "InvoiceDate": "/Date(17…
-2026-05-27 09:54:53 [ai-core]    turn-2  streaming...
-2026-05-27 09:54:55 [ai-core]    turn-2  1989ms  chars=700
-2026-05-27 09:54:55 [done]       total=3263ms
-2026-05-27 09:55:07 [request]    message="exit"  history=8 turns  context={}
-2026-05-27 09:55:12 [error]      
-an error occurred during closing of asynchronous generator <async_generator object stdio_client at 0x1042befb0>
-asyncgen: <async_generator object stdio_client at 0x1042befb0>
+2026-06-01 15:56:43 [server]     Agent server  →  http://localhost:3001
+2026-06-01 15:56:43 [server]       GET  /headless-assistant.js   widget bundle
+2026-06-01 15:56:43 [server]       POST /ask-assistant            collections agent
+2026-06-01 15:58:46 [request]    message="how many invoies do i owe?"  history=0 turns  context={}
+2026-06-01 15:58:48 [ai-core]    turn-1  1084ms  finish=tool_calls  tokens=971  (prompt=959 + completion=12)
+2026-06-01 15:58:48 [agent]      tool_calls: get_customer_summary
+2026-06-01 15:58:48 [mcp]        → get_customer_summary  "Pulling together your account summary…"  args={}
+2026-06-01 15:58:48 [mcp-server] get_customer_summary  0ms
+2026-06-01 15:58:48 [mcp]        ← get_customer_summary  5ms  result={"customer": {"BusinessPartner": "0000123456", "BusinessPartnerName": "DOCTORS PARK PHARMACY", "OrganizationBPName1": "D…
+2026-06-01 15:58:48 [ai-core]    turn-2  streaming...
+2026-06-01 15:58:51 [ai-core]    turn-2  2964ms  chars=1122
+2026-06-01 15:58:51 [done]       total=4932ms
+2026-06-01 16:08:14 [request]    message="how many invoices do i owe? Just tell me the total amount without too many detai…"  history=0 turns  context={}
+2026-06-01 16:08:17 [ai-core]    turn-1  2529ms  finish=tool_calls  tokens=981  (prompt=969 + completion=12)
+2026-06-01 16:08:17 [agent]      tool_calls: get_customer_summary
+2026-06-01 16:08:17 [mcp]        → get_customer_summary  "Pulling together your account summary…"  args={}
+2026-06-01 16:08:17 [mcp-server] get_customer_summary  0ms
+2026-06-01 16:08:17 [mcp]        ← get_customer_summary  4ms  result={"customer": {"BusinessPartner": "0000123456", "BusinessPartnerName": "DOCTORS PARK PHARMACY", "OrganizationBPName1": "D…
+2026-06-01 16:08:17 [ai-core]    turn-2  streaming...
+2026-06-01 16:08:18 [ai-core]    turn-2  1423ms  chars=305
+2026-06-01 16:08:18 [done]       total=3958ms
+2026-06-01 16:08:45 [request]    message="and how many invoices are those?"  history=2 turns  context={}
+2026-06-01 16:08:46 [ai-core]    turn-1  956ms  finish=tool_calls  tokens=1067  (prompt=1055 + completion=12)
+2026-06-01 16:08:46 [agent]      tool_calls: get_customer_summary
+2026-06-01 16:08:46 [mcp]        → get_customer_summary  "Pulling together your account summary…"  args={}
+2026-06-01 16:08:46 [mcp-server] get_customer_summary  0ms
+2026-06-01 16:08:46 [mcp]        ← get_customer_summary  4ms  result={"customer": {"BusinessPartner": "0000123456", "BusinessPartnerName": "DOCTORS PARK PHARMACY", "OrganizationBPName1": "D…
+2026-06-01 16:08:46 [ai-core]    turn-2  streaming...
+2026-06-01 16:08:48 [ai-core]    turn-2  1593ms  chars=324
+2026-06-01 16:08:48 [done]       total=2556ms
+2026-06-01 16:09:00 [request]    message="tell me about that credit memo"  history=4 turns  context={}
+2026-06-01 16:09:01 [ai-core]    turn-1  1002ms  finish=tool_calls  tokens=1164  (prompt=1148 + completion=16)
+2026-06-01 16:09:01 [agent]      tool_calls: get_open_items
+2026-06-01 16:09:01 [mcp]        → get_open_items  "Retrieving your open invoices…"  args={"Scenario":"C"}
+2026-06-01 16:09:01 [mcp-server] get_open_items  0ms
+2026-06-01 16:09:01 [mcp]        ← get_open_items  6ms  result={"d": {"results": [{"CompCode": "1000", "CustNum": "0000123456", "InvoiceNum": "CM-2025-0044", "InvoiceDate": "/Date(174…
+2026-06-01 16:09:01 [ai-core]    turn-2  streaming...
+2026-06-01 16:09:02 [ai-core]    turn-2  1731ms  chars=535
+2026-06-01 16:09:02 [done]       total=2740ms
+an error occurred during closing of asynchronous generator <async_generator object stdio_client at 0x10e8a2fb0>
+asyncgen: <async_generator object stdio_client at 0x10e8a2fb0>
   + Exception Group Traceback (most recent call last):
   |   File "/Library/Frameworks/Python.framework/Versions/3.14/lib/python3.14/site-packages/anyio/_backends/_asyncio.py", line 799, in __aexit__
   |     raise BaseExceptionGroup(

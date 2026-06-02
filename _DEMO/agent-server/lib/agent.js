@@ -8,7 +8,7 @@ import { callAiCore, streamResponse } from './ai-core.js';
 import { log, err } from './logger.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-export const SYSTEM_PROMPT = fs.readFileSync(path.join(__dirname, 'system-prompt.txt'), 'utf8');
+export const SYSTEM_PROMPT = fs.readFileSync(path.join(__dirname, '../../prompts/system-prompt.txt'), 'utf8');
 
 export function buildMessages(history, userMessage) {
   return [

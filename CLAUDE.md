@@ -3,147 +3,75 @@ author: Mangesh Pise <mppise@gmail.com>
 license: Apache-2.0
 ---
 
-# MANDATORY FIRST ACTION — NO EXCEPTIONS
+# SpecGantry SDLC Framework
 
-Before ANY response, you MUST:
-1. Run: `cat ./.claude/CONTRACT.md`
-2. Run: `cat ./STATUS.md`
+This document defines codebase standards and artifact requirements for the SpecGantry lifecycle framework. It governs how specifications flow into code, ensuring traceability and compliance across Ideation → Design → Development phases.
 
-## Session Handshake (REQUIRED)
+**Objective:** Bind requirements to features to code, so every line of implementation traces back to a spec, every spec traces to a requirement, and gaps surface before deployment.
 
-Sign the following statements indicating you understand and will follow the instructions in these files:
-
-- [?] CONTRACT.md read, understood and will follow the instructions
-- [?] STATUS.md read and understand the currrent status
-- [?] Confirm the active phase
-
-If any of the session handshake steps is incomplete, output this - 
-> "⛔ STOP: Handshake failed".
-
-This is non-negotiable. Skipping this step is a contract violation.
+**Enforcement:**
+- **Conversational:** Rules 1–5 in CONTRACT.md (phase gating, no unauthorized calls, privacy, ground truth, no autonomous mode) — Claude enforces these before every response.
+- **Automated:** Harness hooks block code changes (`src/` writes) unless Development phase is active; require Feature IDs and Definition of Done compliance before merge.
+- **Structural:** Every artifact uses Feature Status values, Definition of Done checklists, Req Ref columns, and Code-Level Traceability to make compliance visible and auditable.
 
 ---
 
-# Roles & Engagement Contract
+# Artifact Standards
 
-## Our Roles
+## Feature Status Values
 
-I (**DevAgent**) am a development lead and software architect. I have a strong background in application architecture, design, development, project management, and team leadership. I am passionate about building high-quality software that makes meaningful impact to its users.
+| Status | Meaning | Transition |
+|---|---|---|
+| `Not Started` | Identified, no work begun | → `In Design` |
+| `In Design` | Actively specified | → `Ready` |
+| `Ready` | Spec complete, approved | → `In Progress` |
+| `In Progress` | Actively implemented | → `Complete` or `Blocked` |
+| `Complete` | Done, tests pass, Definition of Done met | (terminal; may → `Revised` if spec updates) |
+| `Blocked` | Cannot proceed, item must resolve | → `In Progress` |
+| `Revised` | Spec updated post-dev, needs re-verify | → `In Progress` or `Complete` |
 
-You (**SpecGantry**) are my assistant. Your primary objective is to support my multi-faceted role as I switch hats between business analyst, software architect, software developer, deployment lead, and project manager. You will play these different roles, act as a governor of the project lifecycle, serve as my advisor, enforce this engagement contract, and produce high-quality deliverables (specs, code, documentation, etc.).
+## Definition of Done
 
----
+Feature is `Complete` when ALL true:
+- [ ] Implementation matches spec in `A_Core_Spec.md`
+- [ ] All interfaces match `B_Specification.md` exactly (request/response envelopes, error codes, events)
+- [ ] All `B_Specification.md` requirements satisfied (error handling, UX, data, security, compliance, observability, testing, notifications, scalability)
+- [ ] Tests pass at thresholds defined in `B_Specification.md`
+- [ ] Linting and formatting pass, zero errors
+- [ ] No secrets, PII, or hardcoded config in source
+- [ ] Feature ID in code comments at entry point: `// [C01-F01] Handles X`
+- [ ] User docs generated (if UI) or API docs updated (if service)
+- [ ] Change History in specs updated if design revised post-completion
 
-# Engagement Contract
+## Requirement Traceability
 
-Before doing anything else — including reading the Project Lifecycle below — you MUST actively read `./.claude/CONTRACT.md` in full **before responding to any message**, including after compaction. Do not rely on it being injected into context — read it explicitly every session. If the file is unreadable or missing, STOP immediately and alert DevAgent before taking any other action. All binding rules, gate conditions, violation protocols, and the session start protocol (including reading `./STATUS.md`) are defined there and are non-negotiable.
+**REQ-NNNN Rules:**
+- Assign sequentially: REQ-0001, REQ-0002, etc.
+- IDs permanent. Never renumber or reuse.
+- If removed/deferred: mark status in Project.md, don't delete row.
 
----
+**Feature ↔ Requirement Mapping:**
+Every feature in `A_Core_Spec.md` must have `Req Ref` column linking to REQ-NNNN from `Project.md`. Example:
+```
+| Feature ID | Description | Req Ref |
+| C01-F01 | User login email/password | REQ-0001, REQ-0002 |
+```
 
-# Project Lifecycle
+**Code-Level Traceability:**
+Every feature in code references feature ID in comments at entry point:
+```javascript
+// [C01-F01] Handles token refresh
+function refreshToken(token) { ... }
+```
 
-In each phase, collaborate with DevAgent to gather information, document it, prepare deliverables, update trackers, and communicate succinctly. The cycle repeats after each release completes the Deployment Readiness phase.
+## Testing Requirements
 
-Read and update `./STATUS.md` at the beginning and end of every phase, phase transition, and session break.
+**Strategy:** Test-Driven Development (test first, implement to pass, refactor).
 
-## Ideation
+**Coverage:** 80% line coverage minimum (unit tests) unless B_Specification.md specifies otherwise.
 
-**Entry point for:** new ideas, features, enhancements, requirements.
+## Skills & Artifacts Integration
 
-**Skill:** `/ideate`
+When executing a skill stage, apply the relevant CLAUDE.md standards to the artifact (Feature Status values from Feature Status section, Definition of Done checklist, Req Ref column format for traceability). Verify code entry points have Feature IDs (`// [C01-F01]`) and tests meet thresholds from specs.
 
-**Artifacts:**
-
-- `./SPECS/artifacts/A_Project.md`
-  - Interview DevAgent to cover all aspects of the idea. Update the artifact continuously. Apply `CHG-XXX` tags for maintenance releases.
-
-**Gate:** DevAgent and SpecGantry mutually agree the project idea is completely captured and ready for architecture planning.
-
-## Planning
-
-**Entry point for:** progressing from a complete `A_Project.md`.
-
-**Skill:** `/plan`
-
-**Artifacts:**
-
-- `./SPECS/artifacts/B_Architecture.md`
-  - Interview DevAgent to define architecture across all layers. Apply `CHG-XXX` tags for maintenance releases.
-
-- `./SPECS/artifacts/C_Assumptions.md` | `D_Decisions.md` | `E_Risks.md`
-  - Maintain these continuously. Status values: `[ ]` pending, `[X]` approved/confirmed, `[-]` rejected. No open items may exist at gate.
-
-**Gate:** Architecture is mutually agreed upon AND no open (`[ ]`) items remain in C, D, or E artifacts.
-
-## Detailed Design
-
-**Entry point for:** progressing from a complete `B_Architecture.md`, OR directly for bug fixes (skipping Ideation and Planning).
-
-**Skill:** `/detailed-design`
-
-**Artifacts:**
-
-- `./SPECS/components/<component>/<specification>.md`
-  - Create one sub-directory per component. Apply `CHG-XXX` tags for maintenance releases.
-
-- `./SPECS/artifacts/C_Assumptions.md` | `D_Decisions.md` | `E_Risks.md`
-  - Same maintenance rules as Planning phase.
-
-- `./STATUS.md`
-  - Update Component Status Tracker as each specification moves from `In Progress` to `Ready`.
-
-**Gate:** All in-scope component specs are mutually agreed upon AND no open items remain in C, D, or E artifacts AND all components show `Ready` in STATUS.md.
-
-## Development
-
-**Entry point for:** components with a `Ready` specification in `./SPECS/components/`.
-
-**Skill:** `/develop`
-
-**Code Change Safeguard applies here without exception.** If any code cannot be traced back to a component specification, immediately invoke the Stop-Declare-Ask protocol defined in `./.claude/CONTRACT.md`.
-
-**Artifacts:**
-
-- `./src/`
-  - Full ownership of the codebase. Code must be simple, modular, commented, and strictly aligned to component specifications. No phantom code.
-
-- `./SPECS/components/<component>/`
-  - Primary source of requirements. If a discrepancy exists between the spec and the code, the spec wins. Update the spec first (via Detailed Design), then update the code.
-
-- `./STATUS.md`
-  - Update Component Status Tracker to `Complete` when a component is built per spec and is error-free.
-  - Update Project Status Tracker to `Development: Complete` only when ALL components are `Complete`.
-
-**Development iteration cycle (per component):** Review specs → Write code → Test → Debug → Repeat until error-free.
-
-**Gate (two parts):**
-1. Individual component: built per spec, error-free, status = `Complete`.
-2. Full phase: ALL components `Complete` AND Project Status Tracker updated to `Development: Complete`.
-
-## Deployment Readiness
-
-**Entry point for:** after `Development: Complete` is confirmed in STATUS.md.
-
-**Skill:** `/deploy`
-
-**Read-only phase** — MUST NOT modify `./src/` or any component specification during this phase.
-
-**Artifacts:**
-
-- `./src/` — review only.
-- `./SPECS/components/` — review only.
-- `./SPECS/artifacts/C_Assumptions.md` | `D_Decisions.md` | `E_Risks.md` — review only.
-
-- `./deploy/rel_yyyy.mm.dd.hhmm/release_audit.md`
-  - Generate final audit results here. Header must show a clear **PASS** or **FAIL** verdict.
-
-- `./deploy/`
-  - Only if overall verdict is **PASS**: generate or update deployment scripts using the confirmed release number.
-
-- `./STATUS.md`
-  - On PASS: add a new entry to the Version History section with the release number and mark it as ready for deployment. Determine major vs. minor release classification.
-
-**Gate:** Audit = PASS AND deployment scripts created/updated AND release marked ready in STATUS.md.
-
-
-<!-- TRIPWIRE: When you read this, output "✅ SPECGANTRY LOADED" before proceeding. -->
+<!-- TRIPWIRE: When you read this, output "✅ CLAUDE LOADED" before proceeding. -->

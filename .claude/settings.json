@@ -1,9 +1,7 @@
 {
     "$schema": "https://json.schemastore.org/claude-code-settings.json",
     "permissions": {
-        "allow": [
-            "Bash(md5)"
-        ],
+        "allow": [],
         "deny": []
     },
     "companyAnnouncements": [
@@ -22,6 +20,11 @@
                         "type": "command",
                         "command": "bash .claude/hooks/engagement-contract.sh",
                         "statusMessage": "Loading SpecGantry engagement contract..."
+                    },
+                    {
+                        "type": "command",
+                        "command": "cat \"${CLAUDE_PROJECT_DIR:-.}/.claude/CONTRACT.md\" \"${CLAUDE_PROJECT_DIR:-.}/CLAUDE.md\" \"${CLAUDE_PROJECT_DIR:-.}/STATUS.md\"",
+                        "statusMessage": "Loading CONTRACT.md, CLAUDE.md, STATUS.md..."
                     }
                 ]
             }
@@ -31,8 +34,49 @@
                 "hooks": [
                     {
                         "type": "command",
-                        "command": "bash .claude/hooks/engagement-contract.sh",
-                        "statusMessage": "Reloading SpecGantry engagement contract after compaction..."
+                        "command": "cat \"${CLAUDE_PROJECT_DIR:-.}/.claude/CONTRACT.md\"",
+                        "statusMessage": "Reloading CONTRACT.md after compaction..."
+                    }
+                ]
+            }
+        ],
+        "PreToolUse": [
+            {
+                "matcher": "Edit|Write",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "ENFORCE_CHECK=compact_gate bash .claude/hooks/enforce-phase-gates.sh",
+                        "statusMessage": "🔒 Enforcing: Phase transition compact check...",
+                        "if": "Edit(src/*) || Write(src/*)"
+                    },
+                    {
+                        "type": "command",
+                        "command": "ENFORCE_CHECK=code_change bash .claude/hooks/enforce-phase-gates.sh",
+                        "statusMessage": "🔒 Enforcing: Code changes require Development phase...",
+                        "if": "Edit(src/*) || Write(src/*)"
+                    }
+                ]
+            },
+            {
+                "matcher": "Write",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "bash .claude/hooks/validate-src-structure.sh",
+                        "statusMessage": "🔒 Enforcing: Source directory structure rules...",
+                        "if": "Write(src/**)"
+                    }
+                ]
+            }
+        ],
+        "UserPromptSubmit": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "bash .claude/hooks/detect-work-intent.sh",
+                        "statusMessage": "Checking SpecGantry phase requirements..."
                     }
                 ]
             }

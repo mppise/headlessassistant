@@ -9,7 +9,7 @@ from lib import mcp_client
 from lib.ai_core import call_ai_core, stream_response
 from lib.logger import log, err
 
-_SYSTEM_PROMPT_PATH = Path(__file__).parent.parent.parent / "agent-server" / "lib" / "system-prompt.txt"
+_SYSTEM_PROMPT_PATH = Path(__file__).parent.parent.parent / "prompts" / "system-prompt.txt"
 SYSTEM_PROMPT = _SYSTEM_PROMPT_PATH.read_text(encoding="utf-8")
 
 

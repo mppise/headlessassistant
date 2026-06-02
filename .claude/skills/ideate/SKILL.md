@@ -1,62 +1,77 @@
 ---
 name: ideate
-description: Drives the ideation phase from raw idea to a complete, feasibility-validated A_Project.md with seeded artifacts — gating entry into the Planning phase.
+description: Drives the ideation phase from raw idea to a complete, feasibility-validated Project.md — gating entry into the Design phase.
 user-invocable: true
 author: Mangesh Pise <mppise@gmail.com>
-license: Apache-2.0 (see LICENSE in project root)
+license: Apache-2.0
 ---
 
-# Ideate
+# Ideate Skill
 
-> Wearing the Business Analyst hat — my goal is to help crystallize this idea into a precise, mutually agreed foundation that's ready for architecture. Let's take it one question at a time.
+**Phase:** Ideation
+**Entry:** Raw project idea or feature request
+**Exit:** Project.md finalized + mutually agreed upon
+**Deliverables:** `./SPECS/artifacts/Project.md` · `./STATUS.md` updated to Ideation: Complete
 
-## Before Starting
+---
 
-1. Read `./STATUS.md` — confirm Ideation is the active phase.
-2. Read `./SPECS/artifacts/A_Project.md` — note every gap and vague section.
-3. Check `./SPECS/artifacts/C_Assumptions.md` for open `[ ]` items — **STOP** if any exist and ask DevLead to resolve them first.
+## Startup Checklist
 
-## Required Sections for `A_Project.md`
+1. Read `./STATUS.md`:
+   - Ideation = ⬜: Create Project.md, start Stage 1
+   - Ideation = 🔄: Resume Stage 1, continue completing Project.md
+   - Ideation = ✅: **BLOCK** — "Ideation complete. Run `/design` next."
+   - Design or Development active: Clarify with user — continue current phase or new project?
+2. Read `./SPECS/artifacts/Project.md` if it exists — note gaps.
 
-`A_Project.md` must contain the following sections. Use this as the reference for the Assess stage.
+---
 
-| Section | What it captures |
-|---|---|
-| **Project Name & Summary** | One-sentence description of what is being built |
-| **Problem Statement** | The pain point or opportunity this project addresses |
-| **Target Users** | Who will use this — roles, personas, technical level |
-| **Goals & Success Criteria** | What "done" looks like; measurable outcomes where possible |
-| **Scope** | What is explicitly in scope and out of scope |
-| **Key Features** | High-level list of capabilities the system must provide |
-| **Constraints & Assumptions** | Technical, organizational, or resource constraints known upfront |
-| **Open Questions** | Anything unresolved that must be answered before architecture begins |
+## Stage 1: Interview (8 Sections)
 
-## Stages
+Conduct one section at a time. Per section: 1 primary question + max 2 follow-ups (3 questions total). Document confirmed answers directly into Project.md. After each section, validate consistency with prior sections; surface conflicts within that section's question budget.
 
-Do not skip or reorder.
+| # | Section | Captures |
+|---|---------|----------|
+| S1 | Project Name & Summary | One-sentence what is being built |
+| S2 | Problem Statement | Pain point or opportunity; who experiences it |
+| S3 | Target Users | Roles, personas, technical level |
+| S4 | Goals & Success Criteria | What "done" looks like; measurable outcomes |
+| S5 | Scope | Explicitly in-scope and out-of-scope |
+| S6 | Key Features | High-level capabilities; assign REQ-NNNN to each |
+| S7 | Constraints & Assumptions | Technical, organizational, resource constraints |
+| S8 | Open Questions | Anything unresolved before architecture |
 
-### 1. Assess
-If `A_Project.md` does not yet exist or is empty, create it now using the section structure above and begin populating from scratch. Otherwise, evaluate the existing file against the required sections. Build a gap list — do not write to the file yet (if it already has content).
+**Process:**
+1. Ask primary question for S1. Wait for answer.
+2. If answer is specific: document in Project.md, advance to next section.
+3. If vague: ask one follow-up. If still vague: ask one final follow-up. After 2 follow-ups, document best available answer with `[TBD]` marker and advance.
+4. Assign REQ-NNNN IDs to each requirement confirmed in S6 (per CLAUDE.md Requirement Traceability).
+5. After S8: proceed to Stage 2.
 
-### 2. Complete
-Work through each gap with targeted questions. One question at a time; wait for DevLead's answer before moving on. Do not invent responses. If an answer is vague, follow up until it is specific enough to document. Update `A_Project.md` continuously as answers are confirmed.
+**Turn budget:** ~24 turns maximum for Stage 1. If budget reached, mark remaining gaps `[TBD]` and proceed.
 
-### 3. Challenge
-Independently stress-test the completed document across four dimensions:
-- **Requirement Completeness** — are all functional and non-functional needs captured?
-- **Feasibility** — is this buildable within the stated constraints?
-- **Clarity** — would a new team member understand what is being built?
-- **Consistency** — do all sections agree with each other?
+---
 
-Surface each finding as a question to DevLead until resolved. Log any new assumptions in `C_Assumptions.md`.
+## Stage 2: Stress-Test & Gate Confirm
 
-### 4. Gate Check
-Confirm mutual agreement with DevLead that `A_Project.md` is complete. Update `./STATUS.md` to reflect Ideation complete.
+Validate across four dimensions. Ask targeted questions until resolved.
+
+| Dimension | Check |
+|-----------|-------|
+| Completeness | All functional + non-functional needs captured? |
+| Feasibility | Buildable within stated constraints? |
+| Clarity | Would a new team member understand what is being built? |
+| Consistency | Do all sections agree? |
+
+Once resolved:
+1. Confirm mutual agreement that Project.md is complete and ready for Design.
+2. Update `./STATUS.md` Ideation → ✅ Complete.
+3. Output: "Ideation ready to gate. Confirm to proceed to `/design`."
+
+---
 
 ## Scope
 
-**Files in scope:** `./SPECS/artifacts/A_Project.md` · `./SPECS/artifacts/C_Assumptions.md`
-
-**Artifact ID format:** `^[ADR]-[A-Z]{2,12}-[a-zA-Z0-9]{8}$`
-— `A-[CATEGORY]-` for assumptions · `D-[CATEGORY]-` for decisions · `R-[CATEGORY]-` for risks
-— Category codes match the section headers in C/D/E artifacts (e.g. `A-BP-`, `D-ARCH-`, `R-TC-`)
+**Creates/modifies:** `./SPECS/artifacts/Project.md`, `./STATUS.md` (at end)
+**Read-only:** nothing
+**Standards:** CLAUDE.md (global standards)

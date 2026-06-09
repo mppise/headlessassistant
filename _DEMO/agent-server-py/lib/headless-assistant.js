@@ -54,12 +54,16 @@
     'strong',
     'em',
     'br',
+    'div',
+    'span',
   ]);
 
   const ALLOWED_ATTRS = {
     a: ['href'],
     th: ['colspan', 'rowspan'],
     td: ['colspan', 'rowspan'],
+    div: ['class'],
+    span: ['class'],
   };
 
   // ─── 2. ConfigLoader ─────────────────────────────────────────────────────────
@@ -167,12 +171,29 @@
 
   // ─── 5. MarkdownRenderer ─────────────────────────────────────────────────────
 
-  // [C01-F12] Convert markdown to HTML (headings, paragraphs, tables, lists, bold, italic, links)
+  // [C01-F12] Convert markdown to HTML (headings, paragraphs, tables, lists, bold, italic, links, cards)
   function renderMarkdown(text) {
     if (!text) return '';
     let html = text;
 
-    // Escape HTML entities in raw text before processing (except within table pipes)
+    // Cards: ```card ... ``` fences — key: value lines become labeled rows
+    html = html.replace(/```card\s*\n([\s\S]*?)```/g, (_, body) => {
+      const rows = body.trim().split('\n').filter(l => l.trim());
+      let card = '<div class="ha-card">';
+      rows.forEach((line) => {
+        const colon = line.indexOf(':');
+        if (colon === -1) {
+          card += '<div class="ha-card-row"><span class="ha-card-value">' + renderInline(line.trim()) + '</span></div>';
+        } else {
+          const key = line.slice(0, colon).trim();
+          const val = line.slice(colon + 1).trim();
+          card += '<div class="ha-card-row"><span class="ha-card-label">' + escapeHtml(key) + '</span><span class="ha-card-value">' + renderInline(val) + '</span></div>';
+        }
+      });
+      card += '</div>';
+      return card;
+    });
+
     // Process block elements in order: tables → headings → lists → paragraphs → inline
 
     // Tables: detect blocks with pipe characters
@@ -234,7 +255,7 @@
       .map((block) => {
         block = block.trim();
         if (!block) return '';
-        if (/^<(h[1-6]|ul|ol|table|li|tr|th|td)/.test(block)) return block;
+        if (/^<(h[1-6]|ul|ol|table|li|tr|th|td|div)/.test(block)) return block;
         return '<p>' + renderInline(block.replace(/\n/g, ' ')) + '</p>';
       })
       .join('');
@@ -559,6 +580,37 @@
 .ha-msg-row--user .ha-bubble-msg a { color: #fff; text-decoration: underline; }
 .ha-bubble-msg strong { font-weight: 600; }
 .ha-bubble-msg em { font-style: italic; }
+
+/* Card blocks */
+.ha-bubble-msg .ha-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin: 6px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+.ha-bubble-msg .ha-card-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+.ha-bubble-msg .ha-card-label {
+  font-size: 0.8em;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+.ha-bubble-msg .ha-card-value {
+  font-weight: 600;
+  color: #111827;
+  text-align: right;
+}
 
 /* Typing indicator */
 .ha-typing { padding: 12px 16px !important; }

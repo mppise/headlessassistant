@@ -1,3 +1,3 @@
-2026-06-01 15:56:32 [server]     Agent server  →  http://localhost:3000
-2026-06-01 15:56:32 [server]       GET  /headless-assistant.js   widget bundle
-2026-06-01 15:56:32 [server]       POST /ask-assistant            collections agent
+2026-06-08 19:55:24 [server]     Agent server  →  http://localhost:3000
+2026-06-08 19:55:24 [server]       GET  /headless-assistant.js   widget bundle
+2026-06-08 19:55:24 [server]       POST /ask-assistant            collections agent
